@@ -31,16 +31,12 @@ public class UserController {
         User user = userService.signIn(signInRequest);
         SignInResponse signInResponse;
         ResponseEntity<SignInResponse> responseEntity;
-        if (user != null) {
-            httpSession.setAttribute(MEMBER_ID, user.getUserId());
-            signInResponse = new SignInResponse(SignInStatus.SUCCESS,user);
-            responseEntity = new ResponseEntity<>(signInResponse, HttpStatus.OK);
-            return responseEntity;
-        } else {
-            signInResponse = new SignInResponse(SignInStatus.FAIL, null);
-            responseEntity = new ResponseEntity<>(signInResponse,
-                HttpStatus.UNAUTHORIZED);
-        }
+
+        httpSession.setAttribute(MEMBER_ID, user.getUserId());
+        signInResponse = new SignInResponse(SignInStatus.SUCCESS,user);
+        responseEntity = new ResponseEntity<>(signInResponse, HttpStatus.OK);
+
         return responseEntity;
     }
+
 }
