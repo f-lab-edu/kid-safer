@@ -1,22 +1,22 @@
 package com.flab.kidsafer.controller;
 
-import com.flab.kidsafer.domain.LoginRequest;
+import com.flab.kidsafer.domain.SignInRequest;
+import com.flab.kidsafer.domain.SignInResponse;
+import com.flab.kidsafer.domain.SignInStatus;
 import com.flab.kidsafer.domain.User;
 import com.flab.kidsafer.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import org.springframework.web.bind.annotation.RestController;
 
-import static com.flab.kidsafer.commons.HttpStatusResponseEntity.*;
-
-@Controller
+@RestController
 @RequestMapping("/users")
 public class UserController {
 
@@ -25,15 +25,22 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("/signUp")
-    public ResponseEntity<HttpStatus> signUp(@RequestBody @Valid LoginRequest loginRequest, HttpSession httpSession) {
+    @PostMapping("/signIn")
+    public ResponseEntity<SignInResponse> signIn(@Valid @RequestBody SignInRequest signInRequest, HttpSession httpSession) {
 
-        User user = userService.signUp(loginRequest);
-
+        User user = userService.signIn(signInRequest);
+        SignInResponse signInResponse;
+        ResponseEntity<SignInResponse> responseEntity;
         if (user != null) {
             httpSession.setAttribute(MEMBER_ID, user.getUserId());
-            return RESPONSE_OK;
+            signInResponse = new SignInResponse(SignInStatus.SUCCESS,user);
+            responseEntity = new ResponseEntity<>(signInResponse, HttpStatus.OK);
+            return responseEntity;
+        } else {
+            signInResponse = new SignInResponse(SignInStatus.FAIL, null);
+            responseEntity = new ResponseEntity<>(signInResponse,
+                HttpStatus.UNAUTHORIZED);
         }
-        return RESPONSE_BAD_REQUEST;
+        return responseEntity;
     }
 }

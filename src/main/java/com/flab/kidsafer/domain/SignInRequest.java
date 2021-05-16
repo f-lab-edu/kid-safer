@@ -3,7 +3,7 @@ package com.flab.kidsafer.domain;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 
-public class LoginRequest {
+public class SignInRequest {
 
     /*
      * @Email :
@@ -17,12 +17,12 @@ public class LoginRequest {
     @NotEmpty
     private String password;
 
-    public LoginRequest(String email, String password) {
+    public SignInRequest(String email, String password) {
         this.email = email;
         this.password = password;
     }
 
-    public LoginRequest(Builder builder) {
+    public SignInRequest(Builder builder) {
         this.email = builder.email;
         this.password = builder.password;
     }
@@ -54,8 +54,8 @@ public class LoginRequest {
             return this;
         }
 
-        public LoginRequest build() {
-            return new LoginRequest(this);
+        public SignInRequest build() {
+            return new SignInRequest(this);
         }
     }
 
