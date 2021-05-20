@@ -3,7 +3,7 @@ package com.flab.kidsafer.domain;
 public class SignInResponse {
 
     private SignInStatus status;
-    User user;
+    private User user;
 
     public SignInResponse(SignInStatus status, User user) {
         this.status = status;
