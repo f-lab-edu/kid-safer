@@ -2,6 +2,7 @@ package com.flab.kidsafer.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flab.kidsafer.domain.SignInRequest;
+import java.util.Objects;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +23,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 class UserControllerTest {
 
-    @Autowired private MockMvc mockMvc;
-    @Autowired private ObjectMapper objectMapper;
+    @Autowired
+    private MockMvc mockMvc;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Test
     @DisplayName("/users/signIn 접근 가능한지 확인")
@@ -35,17 +38,17 @@ class UserControllerTest {
         loginRequest.add("password", "");
 
         mockMvc.perform(post("/users/signIn")       // 요청을 전송하는 역할. 결과로 ResultActions 객체를 받음,
-                .params(loginRequest))                         // 키=값의 파라미터 전달(여러개일때는 params(), 한개일때는 param() 사용)
-                .andExpect(status().is(400))            // 응답을 검증하는 역할
-                .andDo(print());                              // 응답/요청 전체 메시지 확인
-
+            .params(
+                loginRequest))                         // 키=값의 파라미터 전달(여러개일때는 params(), 한개일때는 param() 사용)
+            .andExpect(status().is(400))            // 응답을 검증하는 역할
+            .andDo(print());                              // 응답/요청 전체 메시지 확인
     }
 
     @Test
     @DisplayName("이메일 주소가 규격에 맞지않거나 null일 경우 오류를 반환한다.")
     public void testSignInResponseValidation() throws Exception {
         /* 이메일 형식이 아닐 경우 */
-        SignInRequest.Builder builder = new SignInRequest.Builder("test1.com","1234");
+        SignInRequest.Builder builder = new SignInRequest.Builder("test1.com", "1234");
         SignInRequest signInRequest = builder.build();
 
         /* 객체를 JSON으로 변환하여 요청으로 전달 */
@@ -58,7 +61,7 @@ class UserControllerTest {
             .andDo(print());
 
         /* password가 빈 값일 경우 */
-        builder = new SignInRequest.Builder("123@gmail.com","");
+        builder = new SignInRequest.Builder("123@gmail.com", "");
         signInRequest = builder.build();
 
         loginRequestJsonString = objectMapper.writeValueAsString(signInRequest);
@@ -66,9 +69,9 @@ class UserControllerTest {
         mockMvc.perform(post("/users/signIn")
             .contentType(MediaType.APPLICATION_JSON)
             .content(loginRequestJsonString))
-            .andExpect(rslt -> assertTrue(rslt.getResolvedException().getClass().isAssignableFrom(MethodArgumentNotValidException.class)))
+            .andExpect(rslt -> assertTrue(
+                Objects.requireNonNull(rslt.getResolvedException()).getClass()
+                    .isAssignableFrom(MethodArgumentNotValidException.class)))
             .andDo(print());
     }
-
-
 }

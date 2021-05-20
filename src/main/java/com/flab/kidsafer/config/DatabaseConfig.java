@@ -55,7 +55,7 @@ public class DatabaseConfig {
      *  - 명령을 실행하고, mapper를 가져오고 트랜잭션을 관장하는 인터페이스입니다.
      */
     @Bean
-    public SqlSessionTemplate sqlSessionTemplate(SqlSessionFactory sqlSessionFactory){
+    public SqlSessionTemplate sqlSessionTemplate(SqlSessionFactory sqlSessionFactory) {
         return new SqlSessionTemplate(sqlSessionFactory);
     }
 }

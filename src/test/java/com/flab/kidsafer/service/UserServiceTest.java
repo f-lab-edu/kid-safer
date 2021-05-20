@@ -24,33 +24,27 @@ class UserServiceTest {
 
     @Test
     @DisplayName("DB에 등록된 대상자 로그인 성공")
-    public void signInTest_success(){
-
+    public void signInTest_success() {
         //given
-        SignInRequest loginRequest = new SignInRequest("cjk@gmail.com","123");
+        SignInRequest loginRequest = new SignInRequest("cjk@gmail.com", "123");
 
         //when
         User user = userService.signIn(loginRequest);
 
         //then
-        assertEquals(user.getEmail(),"cjk@gmail.com");
-
+        assertEquals(user.getEmail(), "cjk@gmail.com");
     }
 
     @Test
     @DisplayName("회원 로그인 실패")
-    public void signInTest_failure(){
-
+    public void signInTest_failure() {
         //given
-        SignInRequest loginRequest = new SignInRequest("cjk@gmail.com","12345");
+        SignInRequest loginRequest = new SignInRequest("cjk@gmail.com", "12345");
 
         //when
         User user = userService.signIn(loginRequest);
 
         //then
-        assertEquals(user,null);
+        assertNull(user);
     }
-
-
-
 }

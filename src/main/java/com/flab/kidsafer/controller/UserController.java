@@ -26,17 +26,17 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/signIn")
-    public ResponseEntity<SignInResponse> signIn(@Valid @RequestBody SignInRequest signInRequest, HttpSession httpSession) {
+    public ResponseEntity<SignInResponse> signIn(@Valid @RequestBody SignInRequest signInRequest,
+        HttpSession httpSession) {
 
         User user = userService.signIn(signInRequest);
         SignInResponse signInResponse;
         ResponseEntity<SignInResponse> responseEntity;
 
         httpSession.setAttribute(MEMBER_ID, user.getUserId());
-        signInResponse = new SignInResponse(SignInStatus.SUCCESS,user);
+        signInResponse = new SignInResponse(SignInStatus.SUCCESS, user);
         responseEntity = new ResponseEntity<>(signInResponse, HttpStatus.OK);
 
         return responseEntity;
     }
-
 }

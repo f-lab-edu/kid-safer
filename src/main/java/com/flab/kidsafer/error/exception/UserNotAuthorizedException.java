@@ -7,5 +7,4 @@ public class UserNotAuthorizedException extends BusinessException {
   public UserNotAuthorizedException() {
     super(ErrorCode.USER_NOT_AUTHORIZED);
   }
-
 }

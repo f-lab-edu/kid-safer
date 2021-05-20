@@ -28,9 +28,9 @@ public class UserService {
 
         User user = userMapper.findByEmailAndPassword(email, cryptoPassword);
 
-        if(user == null){
+        if (user == null) {
             throw new UserNotFoundException();
-        } else if("NOT_AUTHORIZED".equals(user.getStatus())) {  // 이메일 인증을 받지 못한 사용자
+        } else if ("NOT_AUTHORIZED".equals(user.getStatus())) {  // 이메일 인증을 받지 못한 사용자
             throw new UserNotAuthorizedException();
         }
         return user;

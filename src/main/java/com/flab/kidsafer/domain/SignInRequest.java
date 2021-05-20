@@ -36,6 +36,7 @@ public class SignInRequest {
     }
 
     public static class Builder {
+
         private String email;
         private String password;
 
@@ -44,12 +45,12 @@ public class SignInRequest {
             this.password = password;
         }
 
-        public Builder email(String email){
+        public Builder email(String email) {
             this.email = email;
             return this;
         }
 
-        public Builder password(String password){
+        public Builder password(String password) {
             this.password = password;
             return this;
         }
@@ -58,6 +59,4 @@ public class SignInRequest {
             return new SignInRequest(this);
         }
     }
-
-
 }
