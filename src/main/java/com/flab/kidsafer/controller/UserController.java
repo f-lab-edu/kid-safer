@@ -4,17 +4,17 @@ import com.flab.kidsafer.domain.SignInRequest;
 import com.flab.kidsafer.domain.SignInResponse;
 import com.flab.kidsafer.domain.SignInStatus;
 import com.flab.kidsafer.domain.User;
+import com.flab.kidsafer.domain.UserDto;
 import com.flab.kidsafer.error.exception.UserNotSignInException;
 import com.flab.kidsafer.service.UserService;
+import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -52,5 +52,10 @@ public class UserController {
 
     public boolean isSignIn(final HttpSession httpSession) {
         return httpSession.getAttribute(MEMBER_ID) != null;
+    }
+
+    @PostMapping("/signUp")
+    public void signUp(@RequestBody UserDto userDto) {
+        userService.signUp(userDto);
     }
 }
