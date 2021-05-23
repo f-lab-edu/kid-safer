@@ -12,7 +12,7 @@ configurations {
 
 	all {
 		// spring-boot-starter-web에있는 logging 모듈과 log4j2 충돌 방지
-		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+		runtime.exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
 	}
 }
 
@@ -25,7 +25,11 @@ dependencies {
 	implementation group: 'mysql', name: 'mysql-connector-java'
 	implementation group: 'org.mybatis.spring.boot', name: 'mybatis-spring-boot-starter', version: '2.1.4'
 	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-log4j2'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	implementation group: 'org.bgee.log4jdbc-log4j2', name: 'log4jdbc-log4j2-jdbc4.1', version: '1.16'
+	implementation 'org.jetbrains:annotations:20.1.0'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'	   /* 테스트 환경 구축을 위해 추가 */
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '2.4.5' /* Valid 애노테이션 통해 검증을 위해 추가 */
+
 }
 
 test {
