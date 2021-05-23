@@ -21,8 +21,11 @@ public class ExceptionController {
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> methodValidException(MethodArgumentNotValidException e) {
+        final ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.SIGNIN_INPUT_INVALID);
+
         logger.warn("MethodArgumentNotValidException 발생");
-        ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.SIGNIN_INPUT_INVALID);
+        logger.warn("에러코드: " + errorResponse.getCode() + ", 에러 상태 : " + errorResponse.getStatus());
+
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
@@ -31,9 +34,12 @@ public class ExceptionController {
      */
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException e) {
-        logger.warn("BusinessException 발생");
         final ErrorCode errorCode = e.getErrorCode();
-        final ErrorResponse response = ErrorResponse.of(errorCode);
-        return new ResponseEntity<>(response, HttpStatus.valueOf(errorCode.getStatus()));
+        final ErrorResponse errorResponse = ErrorResponse.of(errorCode);
+
+        logger.warn("BusinessException 발생");
+        logger.warn("에러코드: " + errorResponse.getCode() + ", 에러 상태 : " + errorResponse.getStatus());
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.valueOf(errorCode.getStatus()));
     }
 }

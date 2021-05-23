@@ -23,8 +23,7 @@ public class UserService {
         LOGGER.info("signIn started");
         String email = signInRequest.getEmail();
         String password = signInRequest.getPassword();
-        // 입력받은 비밀번호는 암호화한다.
-        String cryptoPassword = SHA256Util.encryptSHA256(password);
+        String cryptoPassword = SHA256Util.getSHA256(password);
 
         User user = userMapper.findByEmailAndPassword(email, cryptoPassword);
 
