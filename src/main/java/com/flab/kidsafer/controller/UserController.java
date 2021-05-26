@@ -4,6 +4,7 @@ import com.flab.kidsafer.domain.SignInRequest;
 import com.flab.kidsafer.domain.SignInResponse;
 import com.flab.kidsafer.domain.SignInStatus;
 import com.flab.kidsafer.domain.User;
+import com.flab.kidsafer.error.exception.UserNotSignInException;
 import com.flab.kidsafer.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -38,5 +39,15 @@ public class UserController {
         responseEntity = new ResponseEntity<>(signInResponse, HttpStatus.OK);
 
         return responseEntity;
+    }
+
+    @PostMapping("/signOut")
+    public void signOut(HttpSession httpSession) {
+        /* 로그인 여부 체크 */
+        if(httpSession.getAttribute(MEMBER_ID) == null) {
+            throw new UserNotSignInException();
+        }
+        httpSession.removeAttribute(MEMBER_ID);
+
     }
 }
