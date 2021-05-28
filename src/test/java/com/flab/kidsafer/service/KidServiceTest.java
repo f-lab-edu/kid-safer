@@ -98,7 +98,7 @@ class KidServiceTest {
         int id = kidService.registerKid(kid);
 
         //when
-        kidService.deleteKid(id);
+        kidService.deleteKid(id, 1);
 
         //then
         assertThrows(KidNotFoundException.class, () -> {
@@ -114,7 +114,7 @@ class KidServiceTest {
 
         //then
         assertThrows(KidNotFoundException.class, () -> {
-            kidService.deleteKid(id);   //when
+            kidService.deleteKid(id, 1);   //when
         });
     }
 

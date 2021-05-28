@@ -7,6 +7,8 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface KidMapper {
 
+    int getParentId(int id);
+
     Kid getOneKid(int id);
 
     List<Kid> getAllKid(int parentId);

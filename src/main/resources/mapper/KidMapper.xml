@@ -4,6 +4,12 @@
 
 <mapper namespace="com.flab.kidsafer.mapper.KidMapper">
 
+  <select id="getParentId" parameterType="Integer" resultType="Integer">
+    SELECT parentId
+    FROM kids
+    WHERE id = #{id}
+  </select>
+
   <select id="getOneKid" parameterType="Integer" resultType="com.flab.kidsafer.domain.Kid">
     SELECT id
     , parentId
