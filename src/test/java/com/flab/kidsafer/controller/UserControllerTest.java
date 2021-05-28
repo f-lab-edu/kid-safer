@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.LinkedMultiValueMap;
@@ -87,6 +88,21 @@ class UserControllerTest {
                 Objects.requireNonNull(rslt.getResolvedException()).getClass()
                     .isAssignableFrom(MethodArgumentNotValidException.class)))
             .andDo(print());
+    }
+
+    @Test
+    @DisplayName("로그아웃 성공")
+    public void testSignOut_success() throws Exception {
+
+        MockHttpSession session = new MockHttpSession();
+
+        session.setAttribute("MEMBER_ID", 1);
+
+        mockMvc.perform(post("/users/signOut")
+            .characterEncoding("uft-8")
+            .session(session)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
     }
 
     @Test
