@@ -43,11 +43,14 @@ public class UserController {
 
     @PostMapping("/signOut")
     public void signOut(HttpSession httpSession) {
-        /* 로그인 여부 체크 */
-        if(httpSession.getAttribute(MEMBER_ID) == null) {
+        if(!isSignIn(httpSession)) {
             throw new UserNotSignInException();
         }
         httpSession.removeAttribute(MEMBER_ID);
 
+    }
+
+    public boolean isSignIn(final HttpSession httpSession) {
+        return httpSession.getAttribute(MEMBER_ID) != null;
     }
 }
