@@ -3,16 +3,22 @@ package com.flab.kidsafer.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flab.kidsafer.domain.SignInRequest;
 import java.util.Objects;
+import com.flab.kidsafer.error.exception.UserNotSignInException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.filter.CharacterEncodingFilter;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -27,6 +33,16 @@ class UserControllerTest {
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper objectMapper;
+    @Autowired
+    private WebApplicationContext ctx;
+
+    @BeforeEach
+    public void setup() {
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(ctx)
+            .addFilters(new CharacterEncodingFilter("UTF-8", true)) // 필터 추가
+            .alwaysDo(print())
+            .build();
+    }
 
     @Test
     @DisplayName("/users/signIn 접근 가능한지 확인")
@@ -72,5 +88,32 @@ class UserControllerTest {
                 Objects.requireNonNull(rslt.getResolvedException()).getClass()
                     .isAssignableFrom(MethodArgumentNotValidException.class)))
             .andDo(print());
+    }
+
+    @Test
+    @DisplayName("로그아웃 성공")
+    public void testSignOut_success() throws Exception {
+
+        MockHttpSession session = new MockHttpSession();
+
+        session.setAttribute("MEMBER_ID", 1);
+
+        mockMvc.perform(post("/users/signOut")
+            .characterEncoding("uft-8")
+            .session(session)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("로그인한 대상자 아닐경우 로그아웃 불가")
+    public void testSignOut_failure() throws Exception {
+
+        mockMvc.perform(post("/users/signOut")
+            .characterEncoding("uft-8")
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(rslt -> assertTrue(Objects.requireNonNull(rslt.getResolvedException())
+                                            .getClass()
+                                            .isAssignableFrom(UserNotSignInException.class)));
     }
 }
