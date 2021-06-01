@@ -4,6 +4,7 @@ import com.flab.kidsafer.domain.Kid;
 import com.flab.kidsafer.service.KidService;
 import java.util.List;
 import java.util.Optional;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -52,16 +53,22 @@ public class KidController {
     /*
      * 아이 내역 수정
      */
-    @PutMapping("/{kidId}/{parentId}")
-    public void updateKid(@Valid @RequestBody Kid kid, @PathVariable int parentId) {
+    @PutMapping
+    public void updateKid(@Valid @RequestBody Kid kid, HttpSession httpSession) {
+        int parentId = getSessionUserId(httpSession);
         kidService.updateKid(kid, parentId);
     }
 
     /*
      * 아이 내역 삭제
      */
-    @DeleteMapping("/{kidId}/{parentId}")
-    public void deleteKid(@PathVariable int kidId, @PathVariable int parentId) {
+    @DeleteMapping("/{kidId}")
+    public void deleteKid(@PathVariable int kidId, HttpSession httpSession) {
+        int parentId = getSessionUserId(httpSession);
         kidService.deleteKid(kidId, parentId);
+    }
+
+    public int getSessionUserId(HttpSession httpSession) {
+        return (int) httpSession.getAttribute("MEMBER_ID");
     }
 }
