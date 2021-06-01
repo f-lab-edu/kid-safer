@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 public class KidService {
 
     @Autowired
-    KidMapper kidMapper;
+    private KidMapper kidMapper;
 
     public Kid getOneKid(int id) {
         Kid kid = kidMapper.getOneKid(id);
