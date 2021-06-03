@@ -36,8 +36,9 @@ public class KidController {
     /*
      * 부모로부터 등록된 아이 조회
      */
-    @GetMapping("/parents/{parentId}")
-    public Optional<List<Kid>> getAllKid(@PathVariable int parentId) {
+    @GetMapping
+    public Optional<List<Kid>> getAllKid(HttpSession httpSession) {
+        int parentId = getSessionUserId(httpSession);
         return Optional.ofNullable(kidService.getAllKid(parentId));
     }
 
