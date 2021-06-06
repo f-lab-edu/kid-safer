@@ -21,4 +21,8 @@ public interface UserMapper {
 
     void updateUserPassword(int userId, String password);
 
+
+    void updateEmailCheckTokenWithTime(User user);
+
+    void updateEmailStatus(User user);
 }
