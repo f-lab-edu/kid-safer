@@ -14,6 +14,8 @@ public enum ErrorCode {
     USER_NOT_SIGNIN(400, "M004", "로그인을 하지 않은 사용자입니다."),
     USER_NOT_FOUND(400, "M004", "존재하지 않는 대상자입니다."),
     PASSWORD_INPUT_INVALID(400, "M005", "비밀번호가 기존 값과 일치하지 않습니다."),
+    TOKEN_INPUT_INVALID(400, "M006", "유저 혹은 토큰이 유효하지 않습니다."),
+    EMAIL_SEND_TIME(400, "M007", "이메일은 1시간에 한번만 보낼수 있습니다."),
 
     // Kid
     KID_INPUT_BIRTHYEAR_INVALID(400, "K001", "출생년도가 유효하지 않습니다."),

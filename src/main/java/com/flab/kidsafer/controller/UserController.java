@@ -6,6 +6,8 @@ import com.flab.kidsafer.domain.SignInResponse;
 import com.flab.kidsafer.domain.SignInStatus;
 import com.flab.kidsafer.domain.User;
 import com.flab.kidsafer.domain.UserDto;
+import com.flab.kidsafer.error.exception.EmailSendTimeException;
+import com.flab.kidsafer.error.exception.TokenInvalidException;
 import com.flab.kidsafer.error.exception.UserNotSignInException;
 import com.flab.kidsafer.dto.UserUpdateInfoRequest;
 import com.flab.kidsafer.dto.UserUpdatePasswordRequest;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 @RestController
 @RequestMapping("/users")
@@ -64,8 +67,49 @@ public class UserController {
     }
 
     @PostMapping("/signUp")
-    public void signUp(@RequestBody UserDto userDto) {
-        userService.signUp(userDto);
+    public ResponseEntity<String> signUp(@RequestBody UserDto userDto, ModelAndView mav) {
+        User inserUser = userService.signUp(userDto);
+
+        SignInRequest signInRequest = new SignInRequest.Builder(userDto.getEmail(),
+            userDto.getPassword())
+            .build();
+
+        userService.signIn(signInRequest);
+        mav.setViewName("redirect/");
+        return inserUser != null ? new ResponseEntity<>("success", HttpStatus.OK)
+            : new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @GetMapping("/resendConfirmEmail")
+    public ModelAndView resendConfirmEmail(HttpSession httpSession, ModelAndView mav) {
+
+        int userId = (Integer) httpSession.getAttribute(MEMBER_ID);
+        User user = userService.finById(userId);
+
+        if (!user.canSendConfirmEmail()) {
+            throw new EmailSendTimeException();
+        }
+        userService.sendSignUpConfirmEmail(user);
+
+        mav.setViewName("redirect:/");
+        mav.addObject("email", user.getEmail());
+
+        return mav;
+    }
+
+    @GetMapping("/checkEmailToken")
+    public ModelAndView checkEamilToken(String token, String email, ModelAndView mav) {
+        User user = userService.finByEmail(email);
+
+        if (user == null || !user.isValidToken(token)) {
+            throw new TokenInvalidException();
+        }
+
+        userService.completeSignUp(user);
+        mav.addObject("nickname", user.getNickname());
+
+        mav.setViewName("/users/checkedEmail");
+        return mav;
     }
 
     @GetMapping("/{userId}")

@@ -1,5 +1,8 @@
 package com.flab.kidsafer.domain;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 public class User {
 
     private int userId;
@@ -9,6 +12,9 @@ public class User {
     private String phone;
     private String type;
     private String status;
+    private String emailCheckToken;
+
+    private LocalDateTime emailCheckTokenGeneratedAt;
 
     public User(int userId, String password, String email, String nickname, String phone,
         String type,
@@ -87,6 +93,14 @@ public class User {
         this.status = status;
     }
 
+    public String getEmailCheckToken() {
+        return this.emailCheckToken;
+    }
+
+    public LocalDateTime getEmailCheckTokenGeneratedAt() {
+        return this.emailCheckTokenGeneratedAt;
+    }
+
     public static class Builder {
 
         private String email;
@@ -120,5 +134,22 @@ public class User {
         public User build() {
             return new User(this);
         }
+    }
+
+    public void generateEmailCheckToken() {
+        this.emailCheckToken = UUID.randomUUID().toString();
+        this.emailCheckTokenGeneratedAt = LocalDateTime.now();
+    }
+
+    public void completeSignUp() {
+        this.status = "true";
+    }
+
+    public boolean isValidToken(String token) {
+        return this.emailCheckToken.equals(token);
+    }
+
+    public boolean canSendConfirmEmail() {
+        return this.emailCheckTokenGeneratedAt.isBefore(LocalDateTime.now().minusHours(1));
     }
 }
