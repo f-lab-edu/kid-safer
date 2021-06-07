@@ -78,19 +78,7 @@ class KidServiceTest {
         //then
         assertEquals(getKid.size(), 0);
     }
-
-    @Test
-    @DisplayName("아이가 성년일경우 등록 실패")
-    public void registerKid_failure() {
-        //when
-        kid.setBirthYear("1980");
-
-        //then
-        assertThrows(KidBirthYearInvalidException.class, () -> {
-            int id = kidService.registerKid(kid);   //when
-        });
-    }
-
+    
     @Test
     @DisplayName("아이 존재시 삭제 성공")
     public void deleteKid_sucess() {

@@ -54,8 +54,9 @@ public class KidController {
     /*
      * 아이 내역 수정
      */
-    @PutMapping
-    public void updateKid(@Valid @RequestBody Kid kid, HttpSession httpSession) {
+    @PutMapping("/{kidId}")
+    public void updateKid(@PathVariable int kidId, @Valid @RequestBody Kid kid,
+        HttpSession httpSession) {
         int parentId = getSessionUserId(httpSession);
         kidService.updateKid(kid, parentId);
     }

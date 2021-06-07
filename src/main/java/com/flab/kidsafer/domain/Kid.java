@@ -1,6 +1,7 @@
 package com.flab.kidsafer.domain;
 
 import com.flab.kidsafer.annotation.Gender;
+import com.flab.kidsafer.annotation.Minor;
 import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Objects;
@@ -18,6 +19,7 @@ public class Kid {
     private String gender;
     @NotNull
     @Pattern(regexp = "^[0-9]*${4}")
+    @Minor
     private String birthYear;
     private String detail;
     private LocalDateTime createdDate;
@@ -109,14 +111,4 @@ public class Kid {
         return Objects.hash(id, parentId, gender, birthYear, detail);
     }
 
-    public boolean isKidMinor() {
-        if (birthYear.matches("-?\\d+")) {
-
-            int yearToInt = Integer.parseInt(birthYear);
-
-            int currentYear = Calendar.getInstance().get(Calendar.YEAR);
-            return yearToInt <= currentYear && currentYear - yearToInt <= 20;
-        }
-        return false;
-    }
 }

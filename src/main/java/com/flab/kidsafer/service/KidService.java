@@ -28,14 +28,12 @@ public class KidService {
     }
 
     public int registerKid(Kid kid) {
-        isKidMinor(kid);
         kidMapper.registerKid(kid);
         return kid.getId();
     }
 
     public void updateKid(Kid kid, int parentId) {
         isSameParent(kid, parentId);
-        isKidMinor(kid);
         kidMapper.updateKid(kid);
     }
 
@@ -48,12 +46,6 @@ public class KidService {
     public void isSameParent(Kid kid, int parentId) {
         if (kid.getParentId() != parentId) {
             throw new KidParentNotMatchException();
-        }
-    }
-
-    public void isKidMinor(Kid kid) {
-        if (!kid.isKidMinor()) {     // 나이검증
-            throw new KidBirthYearInvalidException();
         }
     }
 }
