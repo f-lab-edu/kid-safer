@@ -70,18 +70,17 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserById(userId));
     }
 
-    @PatchMapping
-    public void modifyUserInfo(@Valid @RequestBody UserUpdateInfoRequest userUpdateInfoRequest,
+    @PatchMapping("/{userId}")
+    public void modifyUserInfo(@PathVariable int userId,
+        @Valid @RequestBody UserUpdateInfoRequest userUpdateInfoRequest,
         HttpSession httpSession) {
-        int userId = getSessionUserId(httpSession);
         userService.modifyUserInfo(userUpdateInfoRequest, userId);
     }
 
-    @PutMapping("/password")
-    public void changeUserPassword(
+    @PutMapping("/{userId}/password")
+    public void changeUserPassword(@PathVariable int userId,
         @Valid @RequestBody UserUpdatePasswordRequest userUpdatePasswordRequest,
         HttpSession httpSession) {
-        int userId = getSessionUserId(httpSession);
         userService.changePassword(userUpdatePasswordRequest, userId);
     }
 

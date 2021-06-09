@@ -4,7 +4,8 @@ import com.flab.kidsafer.domain.SignInRequest;
 import com.flab.kidsafer.domain.User;
 import com.flab.kidsafer.dto.UserUpdateInfoRequest;
 import com.flab.kidsafer.dto.UserUpdatePasswordRequest;
-import com.flab.kidsafer.error.exception.OperationNotAllowed;
+import com.flab.kidsafer.error.exception.OperationNotAllowedException;
+import com.flab.kidsafer.error.exception.PasswordInputInvalidException;
 import com.flab.kidsafer.error.exception.UserNotFoundException;
 import com.flab.kidsafer.mapper.UserMapper;
 import com.flab.kidsafer.utils.SHA256Util;
@@ -31,7 +32,7 @@ class UserServiceTest {
     @DisplayName("DB에 등록된 대상자 로그인 성공")
     public void signInTest_success() {
         //given
-        SignInRequest loginRequest = new SignInRequest("cjk@gmail.com", "123");
+        SignInRequest loginRequest = new SignInRequest("cjk@gmail.com", "1234!abc");
 
         //when
         User user = userService.signIn(loginRequest);
@@ -62,7 +63,7 @@ class UserServiceTest {
         int userId = 3;
 
         //then
-        assertThrows(OperationNotAllowed.class,
+        assertThrows(OperationNotAllowedException.class,
             () -> {
                 userService.modifyUserInfo(userUpdateInfoRequest, userId);   //when
             });
@@ -73,7 +74,7 @@ class UserServiceTest {
     public void modifyUserInfo_success() {
         //given
         UserUpdateInfoRequest userUpdateInfoRequest = new UserUpdateInfoRequest.Builder()
-            .setUserId(1).setNickname("테스트").setPhone("010-1234-5678").build();
+            .setUserId(1).setNickname("테스트").setPhone("010-1234-5670").build();
         int userId = 1;
 
         //when
@@ -91,11 +92,11 @@ class UserServiceTest {
     public void changePassword_failure_password_not_match() {
         //given
         UserUpdatePasswordRequest userUpdatePasswordRequest = new UserUpdatePasswordRequest.Builder()
-            .setUserId(1).setCurrentPassword("1234").setModifiedPassword("xptmxm").build();
+            .setUserId(1).setCurrentPassword("xptmxm").setModifiedPassword("xptmxm").build();
         int userId = 1;
 
         //then
-        assertThrows(UserNotFoundException.class,
+        assertThrows(PasswordInputInvalidException.class,
             () -> {
                 userService.changePassword(userUpdatePasswordRequest, userId);   //when
             });
@@ -106,7 +107,7 @@ class UserServiceTest {
     public void changePassword_success() {
         //given
         UserUpdatePasswordRequest userUpdatePasswordRequest = new UserUpdatePasswordRequest.Builder()
-            .setUserId(1).setCurrentPassword("12345").setModifiedPassword("12345").build();
+            .setUserId(1).setCurrentPassword("1234!abc").setModifiedPassword("12345").build();
         int userId = 1;
 
         //when
