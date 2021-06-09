@@ -6,7 +6,8 @@ import com.flab.kidsafer.domain.UserDto;
 import com.flab.kidsafer.error.exception.DuplicateIdException;
 import com.flab.kidsafer.dto.UserUpdateInfoRequest;
 import com.flab.kidsafer.dto.UserUpdatePasswordRequest;
-import com.flab.kidsafer.error.exception.OperationNotAllowed;
+import com.flab.kidsafer.error.exception.OperationNotAllowedException;
+import com.flab.kidsafer.error.exception.PasswordInputInvalidException;
 import com.flab.kidsafer.error.exception.UserNotAuthorizedException;
 import com.flab.kidsafer.error.exception.UserNotFoundException;
 import com.flab.kidsafer.mapper.UserMapper;
@@ -92,21 +93,23 @@ public class UserService {
         int userId) {
         isSameUser(userUpdatePasswordRequest.getUserId(), userId);
 
-        String currentPassword = userUpdatePasswordRequest.getCurrentPassword();
-        String cryptCurPwd = SHA256Util.getSHA256(currentPassword);
-
-        User user = getUserByIdAndPwd(userId, cryptCurPwd);
+        User user = getUserById(userId);
         if (user == null) {
             throw new UserNotFoundException();
         }
-        String cryptPwd = SHA256Util
-            .getSHA256(userUpdatePasswordRequest.getModifiedPassword());
+
+        String cryptCurPwd = SHA256Util.getSHA256(userUpdatePasswordRequest.getCurrentPassword());
+        if (!user.getPassword().equals(cryptCurPwd)) {
+            throw new PasswordInputInvalidException();
+        }
+
+        String cryptPwd = SHA256Util.getSHA256(userUpdatePasswordRequest.getModifiedPassword());
         userMapper.updateUserPassword(userId, cryptPwd);
     }
 
     public void isSameUser(int requestUserId, int sessionUserId) {
         if (requestUserId != sessionUserId) {
-            throw new OperationNotAllowed();
+            throw new OperationNotAllowedException();
         }
     }
 }
