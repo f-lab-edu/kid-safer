@@ -6,13 +6,19 @@ import com.flab.kidsafer.domain.SignInStatus;
 import com.flab.kidsafer.domain.User;
 import com.flab.kidsafer.domain.UserDto;
 import com.flab.kidsafer.error.exception.UserNotSignInException;
+import com.flab.kidsafer.dto.UserUpdateInfoRequest;
+import com.flab.kidsafer.dto.UserUpdatePasswordRequest;
 import com.flab.kidsafer.service.UserService;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,7 +49,7 @@ public class UserController {
 
     @PostMapping("/signOut")
     public void signOut(HttpSession httpSession) {
-        if(!isSignIn(httpSession)) {
+        if (!isSignIn(httpSession)) {
             throw new UserNotSignInException();
         }
         httpSession.removeAttribute(MEMBER_ID);
@@ -57,5 +63,29 @@ public class UserController {
     @PostMapping("/signUp")
     public void signUp(@RequestBody UserDto userDto) {
         userService.signUp(userDto);
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<User> getUserInfo(@PathVariable int userId) {
+        return ResponseEntity.ok(userService.getUserById(userId));
+    }
+
+    @PatchMapping
+    public void modifyUserInfo(@Valid @RequestBody UserUpdateInfoRequest userUpdateInfoRequest,
+        HttpSession httpSession) {
+        int userId = getSessionUserId(httpSession);
+        userService.modifyUserInfo(userUpdateInfoRequest, userId);
+    }
+
+    @PutMapping("/password")
+    public void changeUserPassword(
+        @Valid @RequestBody UserUpdatePasswordRequest userUpdatePasswordRequest,
+        HttpSession httpSession) {
+        int userId = getSessionUserId(httpSession);
+        userService.changePassword(userUpdatePasswordRequest, userId);
+    }
+
+    public int getSessionUserId(HttpSession httpSession) {
+        return (int) httpSession.getAttribute("MEMBER_ID");
     }
 }

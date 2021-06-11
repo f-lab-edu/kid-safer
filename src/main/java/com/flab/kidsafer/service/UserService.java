@@ -4,6 +4,9 @@ import com.flab.kidsafer.domain.SignInRequest;
 import com.flab.kidsafer.domain.User;
 import com.flab.kidsafer.domain.UserDto;
 import com.flab.kidsafer.error.exception.DuplicateIdException;
+import com.flab.kidsafer.dto.UserUpdateInfoRequest;
+import com.flab.kidsafer.dto.UserUpdatePasswordRequest;
+import com.flab.kidsafer.error.exception.OperationNotAllowed;
 import com.flab.kidsafer.error.exception.UserNotAuthorizedException;
 import com.flab.kidsafer.error.exception.UserNotFoundException;
 import com.flab.kidsafer.mapper.UserMapper;
@@ -23,13 +26,25 @@ public class UserService {
     @Autowired
     private UserMapper userMapper;
 
+    public User getUserByEmailAndPwd(String email, String cryptoPassword) {
+        return userMapper.findByEmailAndPassword(email, cryptoPassword);
+    }
+
+    public User getUserByIdAndPwd(int userId, String cryptoPassword) {
+        return userMapper.findByIdAndPassword(userId, cryptoPassword);
+    }
+
+    public User getUserById(int userId) {
+        return userMapper.findById(userId);
+    }
+
     public User signIn(SignInRequest signInRequest) {
         LOGGER.info("signIn started");
         String email = signInRequest.getEmail();
         String password = signInRequest.getPassword();
         String cryptoPassword = SHA256Util.getSHA256(password);
 
-        User user = userMapper.findByEmailAndPassword(email, cryptoPassword);
+        User user = getUserByEmailAndPwd(email, cryptoPassword);
 
         if (user == null) {
             throw new UserNotFoundException();
@@ -54,7 +69,8 @@ public class UserService {
         }
 
         userDto.setPassword(SHA256Util.getSHA256(userDto.getPassword()));
-        User newUser = new User.Builder(userDto.getEmail(), userDto.getPassword(), userDto.getType())
+        User newUser = new User.Builder(userDto.getEmail(), userDto.getPassword(),
+            userDto.getType())
             .nickname(userDto.getNickname())
             .phone(userDto.getPhone())
             .status(userDto.getStatus())
@@ -64,6 +80,33 @@ public class UserService {
 
         if (insertCount != 1) {
             throw new RuntimeException("회원가입 입력값을 확인해 주세요" + newUser);
+        }
+    }
+
+    public void modifyUserInfo(UserUpdateInfoRequest userUpdateInfoRequest, int userId) {
+        isSameUser(userUpdateInfoRequest.getUserId(), userId);
+        userMapper.updateUserInfo(userUpdateInfoRequest);
+    }
+
+    public void changePassword(UserUpdatePasswordRequest userUpdatePasswordRequest,
+        int userId) {
+        isSameUser(userUpdatePasswordRequest.getUserId(), userId);
+
+        String currentPassword = userUpdatePasswordRequest.getCurrentPassword();
+        String cryptCurPwd = SHA256Util.getSHA256(currentPassword);
+
+        User user = getUserByIdAndPwd(userId, cryptCurPwd);
+        if (user == null) {
+            throw new UserNotFoundException();
+        }
+        String cryptPwd = SHA256Util
+            .getSHA256(userUpdatePasswordRequest.getModifiedPassword());
+        userMapper.updateUserPassword(userId, cryptPwd);
+    }
+
+    public void isSameUser(int requestUserId, int sessionUserId) {
+        if (requestUserId != sessionUserId) {
+            throw new OperationNotAllowed();
         }
     }
 }

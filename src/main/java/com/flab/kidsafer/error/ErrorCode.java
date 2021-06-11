@@ -2,6 +2,9 @@ package com.flab.kidsafer.error;
 
 public enum ErrorCode {
 
+    // Common
+    OPERATION_NOT_ALLOWED(400, "C001", "유효하지 않은 접근입니다."),
+
     // User
     SIGNIN_INPUT_INVALID(400, "M001", "로그인시 입력한 값이 유효하지 않습니다."),
     SIGNIN_NOT_FOUND(400, "M002", "이메일 혹은 비밀번호를 잘못 입력하였습니다."),
