@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.flab.kidsafer.mapper.KidMapper">
+
+  <select id="getParentId" parameterType="Integer" resultType="Integer">
+    SELECT parentId
+    FROM kids
+    WHERE id = #{id}
+  </select>
+
+  <select id="getOneKid" parameterType="Integer" resultType="com.flab.kidsafer.domain.Kid">
+    SELECT id
+    , parentId
+    , gender
+    , birthYear
+    , detail
+    , createdDate
+    , lastUpdatedDate
+    FROM kids
+    WHERE id = #{id}
+  </select>
+
+  <select id="getAllKid" resultType="com.flab.kidsafer.domain.Kid">
+    SELECT id
+    , parentId
+    , gender
+    , birthYear
+    , detail
+    , createdDate
+    , lastUpdatedDate
+    FROM kids
+    WHERE parentId = #{id}
+  </select>
+
+  <insert id="registerKid">
+    INSERT INTO kids (
+    parentId
+    , gender
+    , birthYear
+    , detail
+    , createdDate
+    , lastUpdatedDate
+    )
+    VALUES
+    (
+    #{parentId},
+    #{gender},
+    #{birthYear},
+    #{detail},
+    now(),
+    now()
+    )
+    <selectKey keyProperty="id" resultType="int" order="AFTER">
+      SELECT LAST_INSERT_ID();
+    </selectKey>
+  </insert>
+
+  <update id="updateKid">
+    UPDATE kids
+    SET gender = #{gender}
+    , birthYear = #{birthYear}
+    , detail = #{detail}
+    , lastUpdatedDate = now()
+    WHERE id = #{id}
+  </update>
+
+  <delete id="deleteKid">
+    DELETE
+    FROM kids
+    WHERE id = #{id}
+
+  </delete>
+
+</mapper>

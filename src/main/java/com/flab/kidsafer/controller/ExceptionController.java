@@ -21,7 +21,7 @@ public class ExceptionController {
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> methodValidException(MethodArgumentNotValidException e) {
-        final ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.SIGNIN_INPUT_INVALID);
+        final ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INPUT_INVALID);
 
         logger.warn("MethodArgumentNotValidException 발생");
         logger.warn("에러코드: " + errorResponse.getCode() + ", 에러 상태 : " + errorResponse.getStatus());
