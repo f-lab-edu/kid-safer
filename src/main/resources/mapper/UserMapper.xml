@@ -5,7 +5,7 @@
 <mapper namespace="com.flab.kidsafer.mapper.UserMapper">
 
   <select id="findByEmailAndPassword" resultType="com.flab.kidsafer.domain.User">
-    SELECT id, email, password, nickname, phone, address, type, status
+    SELECT id, email, password, nickname, phone, type, status
     FROM user
     WHERE email = #{email}
     AND password = #{password}
