@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.flab.kidsafer.mapper.PostMapper">
+  <select id="findPostById" resultType="com.flab.kidsafer.dto.PostDTO">
+    SELECT id, parentId, districtId, title, contents, fee, startDate, endDate, registerDate,
+    dueDate, isFinished
+    FROM posts
+    WHERE id = #{postId}
+  </select>
+
+  <insert id="registerPost" parameterType="com.flab.kidsafer.dto.PostDTO">
+    INSERT INTO
+    posts
+    (id,
+    parentId,
+    districtId,
+    title,
+    contents,
+    fee,
+    startDate,
+    endDate,
+    registerDate,
+    dueDate,
+    isFinished
+    )
+    VALUES
+    (
+    #{id},
+    #{parentId},
+    #{districtId},
+    #{title},
+    #{contents},
+    #{fee},
+    #{startDate},
+    #{endDate},
+    Now(),
+    #{dueDate},
+    'N'
+    )
+  </insert>
+
+  <update id="modifyPostInfo">
+    UPDATE posts
+    SET districtId = #{districtId},
+    title = #{title},
+    contents = #{contents},
+    fee = #{fee},
+    startDate = #{startDate},
+    endDate = #{endDate},
+    dueDate = #{dueDate},
+    isFinished = #{isFinished}
+    WHERE id = #{id}
+  </update>
+
+  <delete id="deletePost">
+    DELETE FROM
+    posts
+    WHERE id = #{id}
+  </delete>
+</mapper>
