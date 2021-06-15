@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flab.kidsafer.mapper.PostLikeMapper">
+
+  <insert id="insertPostLike" parameterType="com.flab.kidsafer.dto.PostLikeDTO">
+    INSERT INTO posts_like (postId,userId)
+    VALUES (#{postId},#{userId});
+  </insert>
+
+  <delete id="deletePostLike" parameterType="com.flab.kidsafer.dto.PostLikeDTO">
+    DELETE FROM posts_like
+    WHERE postId = #{postId}
+    AND userID = #{userId}
+  </delete>
+</mapper>
