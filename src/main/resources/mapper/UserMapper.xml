@@ -3,6 +3,18 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.flab.kidsafer.mapper.UserMapper">
+  <select id="findById" resultType="com.flab.kidsafer.domain.User">
+    SELECT id, email, password, nickname, phone, address, type, status
+    FROM user
+    WHERE id = #{userId}
+  </select>
+
+  <select id="findByIdAndPassword" resultType="com.flab.kidsafer.domain.User">
+    SELECT id, email, password, nickname, phone, address, type, status
+    FROM user
+    WHERE id = #{userId}
+    AND password = #{password}
+  </select>
 
   <select id="findByEmailAndPassword" resultType="com.flab.kidsafer.domain.User">
     SELECT id, email, password, nickname, phone, type, status
@@ -21,5 +33,18 @@
     FROM user
     WHERE email = #{email}
   </select>
+
+  <update id="updateUserInfo">
+    UPDATE user
+    SET nickname = IFNULL(#{nickname}, nickname),
+    phone = IFNULL(#{phone}, phone)
+    WHERE id = #{userId}
+  </update>
+
+  <update id="updateUserPassword">
+    UPDATE user
+    SET password = #{password}
+    WHERE id = #{userId}
+  </update>
 
 </mapper>

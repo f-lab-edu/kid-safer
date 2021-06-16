@@ -4,7 +4,7 @@ import com.flab.kidsafer.error.ErrorCode;
 
 public class UserNotFoundException extends BusinessException {
 
-  public UserNotFoundException() {
-    super(ErrorCode.SIGNIN_NOT_FOUND);
-  }
+    public UserNotFoundException() {
+        super(ErrorCode.USER_NOT_FOUND);
+    }
 }
