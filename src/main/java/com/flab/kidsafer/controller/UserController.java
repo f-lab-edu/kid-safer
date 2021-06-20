@@ -1,5 +1,6 @@
 package com.flab.kidsafer.controller;
 
+import com.flab.kidsafer.config.auth.dto.SessionUser;
 import com.flab.kidsafer.domain.SignInRequest;
 import com.flab.kidsafer.domain.SignInResponse;
 import com.flab.kidsafer.domain.SignInStatus;
@@ -41,6 +42,8 @@ public class UserController {
         ResponseEntity<SignInResponse> responseEntity;
 
         httpSession.setAttribute(MEMBER_ID, user.getUserId());
+        SessionUser sessionUser = new SessionUser(user);
+        httpSession.setAttribute("user", sessionUser);
         signInResponse = new SignInResponse(SignInStatus.SUCCESS, user);
         responseEntity = new ResponseEntity<>(signInResponse, HttpStatus.OK);
 
