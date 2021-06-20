@@ -16,7 +16,9 @@ public enum ErrorCode {
     PASSWORD_INPUT_INVALID(400, "M005", "비밀번호가 기존 값과 일치하지 않습니다."),
 
     // Kid
-    KID_INPUT_BIRTHYEAR_INVALID(400, "K001", "출생년도가 유효하지 않습니다.");
+    KID_INPUT_BIRTHYEAR_INVALID(400, "K001", "출생년도가 유효하지 않습니다."),
+    KID_NOT_FOUND(400, "K002", "해당하는 아이가 없습니다."),
+    KID_PARENT_NOT_MATCH(400, "K003", "아이의 부모가 아닙니다.");
 
     private final String code;
     private final String message;
