@@ -1,8 +1,10 @@
 package com.flab.kidsafer.controller;
 
+import com.flab.kidsafer.config.auth.LoginUser;
+import com.flab.kidsafer.config.auth.dto.SessionUser;
 import com.flab.kidsafer.dto.PostDTO;
+import com.flab.kidsafer.error.exception.OperationNotAllowedException;
 import com.flab.kidsafer.service.PostService;
-import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -29,24 +31,24 @@ public class PostController {
     }
 
     @PostMapping
-    public void registerPost(@RequestBody @Valid PostDTO postDTO) {
+    public void registerPost(@RequestBody @Valid PostDTO postDTO, @LoginUser SessionUser user) {
+        if(!"PARENT".equals(user.getType()))  //TODO : enum타입으로 변경 예정
+            throw new OperationNotAllowedException();
         postService.registerPost(postDTO);
     }
 
     @PutMapping("/{postId}")
     public void modifyPostInfo(@PathVariable int postId, @RequestBody @Valid PostDTO postDTO,
-        HttpSession httpSession) {
+        @LoginUser SessionUser user) {
         if (postId != postDTO.getId()) {
-            throw new RuntimeException("수정하려는 post가 유효하지 않습니다."); // TODO : 차후 Merge할 예외 사용 예정
+            throw new OperationNotAllowedException();
         }
 
-        postService.modifyPostsInfo(postDTO, (Integer) httpSession
-            .getAttribute("MEMBER_ID")); // TODO : httpSession이 아닌 애노테이션으로 세션 정보 가져오도록 개선 예정
+        postService.modifyPostsInfo(postDTO, user.getId());
     }
 
     @DeleteMapping("/{postId}")
-    public void deletePost(@PathVariable int postId, HttpSession httpSession) {
-        postService.deletePosts(postId, (Integer) httpSession
-            .getAttribute("MEMBER_ID"));   // TODO : httpSession이 아닌 애노테이션으로 세션 정보 가져오도록 개선 예정
+    public void deletePost(@PathVariable int postId, @LoginUser SessionUser user) {
+        postService.deletePosts(postId, user.getId());
     }
 }

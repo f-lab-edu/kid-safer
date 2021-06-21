@@ -7,6 +7,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.flab.kidsafer.config.auth.dto.SessionUser;
+import com.flab.kidsafer.domain.User;
 import com.flab.kidsafer.dto.PostDTO;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -37,6 +39,11 @@ class PostControllerTest {
     @Autowired
     private WebApplicationContext ctx;
 
+    private User user;
+    private SessionUser loginUser;
+
+    private MockHttpSession session;
+
     @BeforeEach
     public void setup() {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(ctx)
@@ -45,12 +52,30 @@ class PostControllerTest {
             .build();
     }
 
+    @BeforeEach
+    public void setSessionUser() {
+        user = new User(1, "1234", "test@test", "test", "test", "PARENT", "DEFAULT");
+        loginUser = new SessionUser(user);
+        session = new MockHttpSession();
+        session.setAttribute("user", loginUser);
+    }
+
     @Test
     @DisplayName("post 조회 성공")
     public void getOnePost_success() throws Exception {
         mockMvc.perform(get("/posts/1")
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
+            .andDo(print());
+
+    }
+
+    @Test
+    @DisplayName("post 조회 실패")
+    public void getOnePost_failure() throws Exception {
+        mockMvc.perform(get("/posts/9999")
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest())
             .andDo(print());
 
     }
@@ -74,6 +99,7 @@ class PostControllerTest {
 
         mockMvc.perform(post("/posts")
             .contentType(MediaType.APPLICATION_JSON)
+            .session(session)
             .content(postJsonString))
             .andExpect(status().isOk())
             .andDo(print());
@@ -115,7 +141,6 @@ class PostControllerTest {
         /* 객체를 JSON으로 변환하여 요청으로 전달 */
         String postJsonString = objectMapper.writeValueAsString(post);
 
-        MockHttpSession session = new MockHttpSession();
         session.setAttribute("MEMBER_ID", post.getParentId());
 
         mockMvc.perform(put("/posts/1")
@@ -128,7 +153,7 @@ class PostControllerTest {
 
     @Test
     @DisplayName("post 정보 수정 실패")
-    public void modifyPostInfo_failue() throws Exception {
+    public void modifyPostInfo_failure() throws Exception {
         PostDTO post = new PostDTO.Builder(1).setParentId(1)
             .setDistrictId(100)
             .setTitle("도우미를 구합니다.(수정)")         // 값 수정
@@ -137,8 +162,10 @@ class PostControllerTest {
         /* 객체를 JSON으로 변환하여 요청으로 전달 */
         String postJsonString = objectMapper.writeValueAsString(post);
 
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute("MEMBER_ID", post.getParentId() + 1);
+        /* 세션 정보 변경 */
+        user.setUserId(post.getParentId() + 1);
+        loginUser = new SessionUser(user);
+        session.setAttribute("user", loginUser);
 
         mockMvc.perform(put("/posts/1")
             .characterEncoding("uft-8")
@@ -152,9 +179,6 @@ class PostControllerTest {
     @DisplayName("post 삭제 성공")
     public void deletePostInfo_success() throws Exception {
 
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute("MEMBER_ID", 1);
-
         mockMvc.perform(delete("/posts/1")
             .characterEncoding("uft-8")
             .session(session)
@@ -166,10 +190,12 @@ class PostControllerTest {
     @DisplayName("삭제 요청자와 작성자가 달라 post 삭제 실패")
     public void deletePostInfo_failure() throws Exception {
 
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute("MEMBER_ID", 2);
+        /* 세션 정보 변경 */
+        user.setUserId(9999);
+        loginUser = new SessionUser(user);
+        session.setAttribute("user", loginUser);
 
-        mockMvc.perform(delete("/posts/1")
+        mockMvc.perform(delete("/posts/2")
             .characterEncoding("uft-8")
             .session(session)
             .contentType(MediaType.APPLICATION_JSON))

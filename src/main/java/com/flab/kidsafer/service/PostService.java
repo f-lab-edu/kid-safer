@@ -1,6 +1,8 @@
 package com.flab.kidsafer.service;
 
 import com.flab.kidsafer.dto.PostDTO;
+import com.flab.kidsafer.error.exception.OperationNotAllowedException;
+import com.flab.kidsafer.error.exception.PostNotFoundException;
 import com.flab.kidsafer.mapper.PostMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,7 +19,11 @@ public class PostService {
     private PostMapper postMapper;
 
     public PostDTO getPostInfoByPostId(int postId) {
-        return postMapper.findPostById(postId);
+        PostDTO post = postMapper.findPostById(postId);
+        if (post == null) {
+            throw new PostNotFoundException();
+        }
+        return post;
     }
 
     @Transactional
@@ -28,7 +34,7 @@ public class PostService {
     @Transactional
     public void modifyPostsInfo(PostDTO postDTO, int userId) {
         if (postDTO.getParentId() != userId) {
-            throw new RuntimeException();   // TO-DO : 추후 다른 branch merge 되면 해당 예외로 적용
+            throw new OperationNotAllowedException();
         }
 
         postMapper.modifyPostInfo(postDTO);
@@ -38,7 +44,7 @@ public class PostService {
     public void deletePosts(int postId, int userId) {
         PostDTO post = postMapper.findPostById(postId);
         if (post.getParentId() != userId) {
-            throw new RuntimeException();   // TO-DO : 추후 다른 branch merge 되면 해당 예외로 적용
+            throw new OperationNotAllowedException();
         }
         postMapper.deletePost(postId);
     }

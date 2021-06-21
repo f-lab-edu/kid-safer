@@ -16,8 +16,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
@@ -26,11 +26,14 @@ class PostServiceTest {
     @InjectMocks
     private PostService postService;
 
-    @Spy
+    @Mock
     private PostMapper postMapper;
 
-    public PostDTO generatePost(int postId) {
-        return new PostDTO.Builder(30)
+    private PostDTO post;
+
+    @BeforeEach
+    public void generatePost() {
+        post =  new PostDTO.Builder(30)
             .setParentId(1)
             .setDistrictId(100)
             .setTitle("도우미를 구합니다.")
@@ -52,7 +55,6 @@ class PostServiceTest {
     @DisplayName("게시글 상세 조회")
     public void getOnePost_success() {
         // given
-        PostDTO post = generatePost(100);
         when(postMapper.findPostById(anyInt())).thenReturn(post);
 
         // when
@@ -66,8 +68,6 @@ class PostServiceTest {
     @DisplayName("게시글 등록 성공")
     public void registerPost_success() {
         // given
-        PostDTO post = generatePost(100);
-
         doNothing().when(postMapper).registerPost(post);
 
         // when
@@ -80,9 +80,6 @@ class PostServiceTest {
     @Test
     @DisplayName("게시글 작성자가 아니라면 수정 실패")
     public void modifyPost_failure() {
-        // given
-        PostDTO post = generatePost(100);
-
         // then
         assertThrows(RuntimeException.class, () -> {
             postService.modifyPostsInfo(post, post.getParentId() + 1);  // when
@@ -93,7 +90,6 @@ class PostServiceTest {
     @DisplayName("게시글 작성자일경우 수정 성공")
     public void modifyPost_success() {
         // given
-        PostDTO post = generatePost(100);
         doNothing().when(postMapper).modifyPostInfo(post);
 
         // when
@@ -107,7 +103,6 @@ class PostServiceTest {
     @DisplayName("게시글 작성자가 아니라면 삭제 실패")
     public void deletePost_failure() {
         // given
-        PostDTO post = generatePost(100);
         when(postMapper.findPostById(post.getId())).thenReturn(post);
 
         // then
@@ -120,7 +115,6 @@ class PostServiceTest {
     @DisplayName("게시글 작성자일경우 삭제 성공")
     public void deletePost_success() {
         // given
-        PostDTO post = generatePost(100);
         doNothing().when(postMapper).deletePost(post.getId());
         when(postMapper.findPostById(post.getId())).thenReturn(post);
 

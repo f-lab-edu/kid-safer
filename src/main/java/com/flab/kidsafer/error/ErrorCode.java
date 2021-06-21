@@ -18,7 +18,10 @@ public enum ErrorCode {
     // Kid
     KID_INPUT_BIRTHYEAR_INVALID(400, "K001", "출생년도가 유효하지 않습니다."),
     KID_NOT_FOUND(400, "K002", "해당하는 아이가 없습니다."),
-    KID_PARENT_NOT_MATCH(400, "K003", "아이의 부모가 아닙니다.");
+    KID_PARENT_NOT_MATCH(400, "K003", "아이의 부모가 아닙니다."),
+
+    // Post
+    POST_NOT_FOUND(400,"P001","해당하는 게시글이 없습니다");
 
     private final String code;
     private final String message;

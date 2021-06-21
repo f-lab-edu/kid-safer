@@ -43,14 +43,14 @@
 
   <update id="modifyPostInfo">
     UPDATE posts
-    SET districtId = #{districtId},
-    title = #{title},
-    contents = #{contents},
-    fee = #{fee},
-    startDate = #{startDate},
-    endDate = #{endDate},
-    dueDate = #{dueDate},
-    isFinished = #{isFinished}
+    SET districtId = IFNULL(#{districtId}, districtId),
+    title = IFNULL(#{title}, title),
+    contents = IFNULL(#{contents}, contents),
+    fee = IFNULL(#{fee}, fee),
+    startDate = IFNULL(#{startDate}, startDate),
+    endDate = IFNULL(#{endDate}, endDate),
+    dueDate = IFNULL(#{dueDate}, dueDate),
+    isFinished = IFNULL(#{isFinished}, isFinished)
     WHERE id = #{id}
   </update>
 
