@@ -12,7 +12,7 @@ configurations {
 
 	all {
 		// spring-boot-starter-web에있는 logging 모듈과 log4j2 충돌 방지
-		runtime.exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
 	}
 }
 
