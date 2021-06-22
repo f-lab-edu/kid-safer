@@ -47,12 +47,6 @@
     WHERE id = #{userId}
   </update>
 
-  <select id="findById" resultType="com.flab.kidsafer.domain.User">
-    SELECT id, email, password, nickname, phone, type, status
-    FROM user
-    WHERE id = #{id}
-  </select>
-
   <update id="updateEmailCheckTokenWithTime" parameterType="com.flab.kidsafer.domain.User">
     update
       user
