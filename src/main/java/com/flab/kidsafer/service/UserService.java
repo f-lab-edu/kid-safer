@@ -1,7 +1,7 @@
 package com.flab.kidsafer.service;
 
 import com.flab.kidsafer.config.AppProperties;
-import com.flab.kidsafer.domain.EmailMessage;
+import com.flab.kidsafer.mail.EmailMessage;
 import com.flab.kidsafer.domain.SignInRequest;
 import com.flab.kidsafer.domain.User;
 import com.flab.kidsafer.domain.UserDto;
@@ -12,6 +12,7 @@ import com.flab.kidsafer.error.exception.OperationNotAllowedException;
 import com.flab.kidsafer.error.exception.PasswordInputInvalidException;
 import com.flab.kidsafer.error.exception.UserNotAuthorizedException;
 import com.flab.kidsafer.error.exception.UserNotFoundException;
+import com.flab.kidsafer.mail.EmailService;
 import com.flab.kidsafer.mapper.UserMapper;
 import com.flab.kidsafer.utils.SHA256Util;
 import javax.validation.Valid;

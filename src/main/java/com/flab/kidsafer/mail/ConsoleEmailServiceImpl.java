@@ -1,10 +1,9 @@
-package com.flab.kidsafer.service;
+package com.flab.kidsafer.mail;
 
-import com.flab.kidsafer.domain.EmailMessage;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ConsoleEmailService implements EmailService {
+public class ConsoleEmailServiceImpl implements EmailService {
 
     @Override
     public void sendEmail(EmailMessage emailMessage) {

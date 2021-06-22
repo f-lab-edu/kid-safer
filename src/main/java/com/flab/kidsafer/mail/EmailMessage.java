@@ -1,4 +1,4 @@
-package com.flab.kidsafer.domain;
+package com.flab.kidsafer.mail;
 
 public class EmailMessage {
 

@@ -1,6 +1,4 @@
-package com.flab.kidsafer.service;
-
-import com.flab.kidsafer.domain.EmailMessage;
+package com.flab.kidsafer.mail;
 
 public interface EmailService {
 
