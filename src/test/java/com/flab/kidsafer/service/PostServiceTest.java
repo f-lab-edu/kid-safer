@@ -4,10 +4,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.flab.kidsafer.dto.PostDTO;
+import com.flab.kidsafer.error.exception.OperationNotAllowedException;
 import com.flab.kidsafer.mapper.PostMapper;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -33,7 +35,7 @@ class PostServiceTest {
 
     @BeforeEach
     public void generatePost() {
-        post =  new PostDTO.Builder(30)
+        post = new PostDTO.Builder(30)
             .setParentId(1)
             .setDistrictId(100)
             .setTitle("도우미를 구합니다.")
@@ -80,10 +82,16 @@ class PostServiceTest {
     @Test
     @DisplayName("게시글 작성자가 아니라면 수정 실패")
     public void modifyPost_failure() {
+        // given
+        doNothing().when(postMapper).modifyPostInfo(post);
+
         // then
-        assertThrows(RuntimeException.class, () -> {
+        assertThrows(OperationNotAllowedException.class, () -> {
             postService.modifyPostsInfo(post, post.getParentId() + 1);  // when
         });
+
+        // then
+        verify(postMapper, times(0)).modifyPostInfo(any(PostDTO.class));
     }
 
     @Test
@@ -106,9 +114,12 @@ class PostServiceTest {
         when(postMapper.findPostById(post.getId())).thenReturn(post);
 
         // then
-        assertThrows(RuntimeException.class, () -> {
+        assertThrows(OperationNotAllowedException.class, () -> {
             postService.deletePosts(post.getId(), post.getParentId() + 1);  // when
         });
+
+        // then
+        verify(postMapper, times(0)).deletePost(post.getId());
     }
 
     @Test

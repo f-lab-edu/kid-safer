@@ -71,7 +71,7 @@ class PostControllerTest {
     }
 
     @Test
-    @DisplayName("post 조회 실패")
+    @DisplayName("DB에 존재하지 않는 postid로 조회하여 실패")
     public void getOnePost_failure() throws Exception {
         mockMvc.perform(get("/posts/9999")
             .contentType(MediaType.APPLICATION_JSON))
@@ -107,7 +107,7 @@ class PostControllerTest {
     }
 
     @Test
-    @DisplayName("post 등록 실패")
+    @DisplayName("필수 입력 프로퍼티가 null로 인해 post 등록 실패")
     public void registerPost_failure() throws Exception {
         PostDTO post = new PostDTO.Builder(1).setParentId(1)
             .setDistrictId(100)
@@ -152,7 +152,7 @@ class PostControllerTest {
     }
 
     @Test
-    @DisplayName("post 정보 수정 실패")
+    @DisplayName("수정 요청자와 작성자가 달라 post 정보 수정 실패")
     public void modifyPostInfo_failure() throws Exception {
         PostDTO post = new PostDTO.Builder(1).setParentId(1)
             .setDistrictId(100)
