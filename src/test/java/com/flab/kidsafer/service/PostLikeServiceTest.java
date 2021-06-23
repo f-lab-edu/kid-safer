@@ -3,6 +3,7 @@ package com.flab.kidsafer.service;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -19,8 +20,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
@@ -29,13 +30,13 @@ class PostLikeServiceTest {
     @InjectMocks
     private PostLikeService postLikeService;
 
-    @Spy
+    @Mock
     private PostLikeMapper postLikeMapper;
 
-    @Spy
+    @Mock
     private UserMapper userMapper;
 
-    @Spy
+    @Mock
     private PostMapper postMapper;
 
     @BeforeEach
@@ -87,6 +88,8 @@ class PostLikeServiceTest {
             postLikeService.like(postLike.getPostId(), postLike.getUserId());   // when
         });
 
+        verify(postLikeMapper, times(0)).insertPostLike(postLike);
+
     }
 
     @Test
@@ -103,6 +106,8 @@ class PostLikeServiceTest {
         assertThrows(PostNotFoundException.class, () -> {
             postLikeService.like(postLike.getPostId(), postLike.getUserId());   // when
         });
+
+        verify(postLikeMapper, times(0)).insertPostLike(postLike);
 
     }
 
@@ -121,5 +126,41 @@ class PostLikeServiceTest {
 
         // then
         verify(postLikeMapper).deletePostLike(any(PostLikeDTO.class));
+    }
+
+    @Test
+    @DisplayName("해당 유저가 좋아요 한 기록이 없어 좋아요 취소 실패")
+    public void unlike_failure1() {
+        // given
+        PostLikeDTO postLike = generatePostLike();
+
+        doNothing().when(postLikeMapper).deletePostLike(postLike);
+        when(userMapper.findById(postLike.getUserId())).thenReturn(generateUser());
+        when(postMapper.findPostById(postLike.getPostId())).thenReturn(null);
+
+        // then
+        assertThrows(PostNotFoundException.class, () -> {
+            postLikeService.unlike(postLike.getPostId(), postLike.getUserId());   // when
+        });
+        verify(postLikeMapper, times(0)).deletePostLike(postLike);
+
+    }
+
+    @Test
+    @DisplayName("해당 유저가 없어 좋아요 취소 실패")
+    public void unlike_failure2() {
+        // given
+        PostLikeDTO postLike = generatePostLike();
+
+        doNothing().when(postLikeMapper).insertPostLike(postLike);
+        when(userMapper.findById(postLike.getUserId())).thenReturn(generateUser());
+        when(postMapper.findPostById(postLike.getPostId())).thenReturn(null);
+
+        // then
+        assertThrows(UserNotFoundException.class, () -> {
+            postLikeService.like(postLike.getPostId(), -999);   // when
+        });
+        verify(postLikeMapper, times(0)).deletePostLike(postLike);
+
     }
 }

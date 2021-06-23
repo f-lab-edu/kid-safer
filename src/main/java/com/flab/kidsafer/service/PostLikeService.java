@@ -1,6 +1,7 @@
 package com.flab.kidsafer.service;
 
 import com.flab.kidsafer.dto.PostLikeDTO;
+import com.flab.kidsafer.error.exception.OperationNotAllowedException;
 import com.flab.kidsafer.error.exception.PostNotFoundException;
 import com.flab.kidsafer.error.exception.UserNotFoundException;
 import com.flab.kidsafer.mapper.PostLikeMapper;
@@ -30,7 +31,9 @@ public class PostLikeService {
         if (postMapper.findPostById(postId) == null) {
             throw new PostNotFoundException();  // TODO : Optional로 변경
         }
-
+        if (postLikeMapper.hasPostLikeByPostIdAndUserId(postId, userId)) {
+            throw new OperationNotAllowedException();
+        }
         PostLikeDTO postLikeDTO = new PostLikeDTO.Builder()
             .setPostId(postId)
             .setUserId(userId)
@@ -48,7 +51,9 @@ public class PostLikeService {
         if (postMapper.findPostById(postId) == null) {
             throw new PostNotFoundException();  // TODO : Optional로 변경
         }
-
+        if (!postLikeMapper.hasPostLikeByPostIdAndUserId(postId, userId)) {
+            throw new OperationNotAllowedException();
+        }
         PostLikeDTO postLikeDTO = new PostLikeDTO.Builder()
             .setPostId(postId)
             .setUserId(userId)
