@@ -1,5 +1,6 @@
 package com.flab.kidsafer.service;
 
+import com.flab.kidsafer.domain.PostLike;
 import com.flab.kidsafer.dto.PostLikeDTO;
 import com.flab.kidsafer.error.exception.OperationNotAllowedException;
 import com.flab.kidsafer.error.exception.PostNotFoundException;
@@ -34,13 +35,13 @@ public class PostLikeService {
         if (postLikeMapper.hasPostLikeByPostIdAndUserId(postId, userId)) {
             throw new OperationNotAllowedException();
         }
-        PostLikeDTO postLikeDTO = new PostLikeDTO.Builder()
-            .setPostId(postId)
-            .setUserId(userId)
+        PostLike postLike = new PostLike.Builder()
+            .postId(postId)
+            .userId(userId)
             .build();
-        postLikeMapper.insertPostLike(postLikeDTO);
+        postLikeMapper.insertPostLike(postLike);
 
-        return postLikeDTO;
+        return postLike.toPostLikeDTO();
     }
 
     @Transactional
@@ -54,10 +55,10 @@ public class PostLikeService {
         if (!postLikeMapper.hasPostLikeByPostIdAndUserId(postId, userId)) {
             throw new OperationNotAllowedException();
         }
-        PostLikeDTO postLikeDTO = new PostLikeDTO.Builder()
-            .setPostId(postId)
-            .setUserId(userId)
+        PostLike postLike = new PostLike.Builder()
+            .postId(postId)
+            .userId(userId)
             .build();
-        postLikeMapper.deletePostLike(postLikeDTO);
+        postLikeMapper.deletePostLike(postLike);
     }
 }

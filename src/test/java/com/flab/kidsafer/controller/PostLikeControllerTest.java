@@ -58,7 +58,13 @@ public class PostLikeControllerTest {
     @Test
     @DisplayName("좋아요 성공")
     public void like_success() throws Exception {
-        mockMvc.perform(post("/likes/{postId}", VALID_POSTID)
+        /* 기존 좋아요 내역 취소 */
+        mockMvc.perform(delete("/posts/{postId}/likes", VALID_POSTID)
+            .contentType(MediaType.APPLICATION_JSON)
+            .session(session))
+            .andExpect(status().isOk())
+            .andDo(print());
+        mockMvc.perform(post("/posts/{postId}/likes", VALID_POSTID)
             .contentType(MediaType.APPLICATION_JSON)
             .session(session))
             .andExpect(status().isOk())
@@ -69,7 +75,7 @@ public class PostLikeControllerTest {
     @Test
     @DisplayName("이미 좋아요를 한 post에 다시 좋아요 시도해 실패")
     public void like_failure1() throws Exception {
-        mockMvc.perform(post("/likes/{postId}", ALREADY_LIKE_POSTID)
+        mockMvc.perform(post("/posts/{postId}/likes", ALREADY_LIKE_POSTID)
             .contentType(MediaType.APPLICATION_JSON)
             .session(session))
             .andExpect(status().isBadRequest())
@@ -80,10 +86,10 @@ public class PostLikeControllerTest {
     @Test
     @DisplayName("해당되는 포스트가 없어 좋아요 실패")
     public void like_failure2() throws Exception {
-        mockMvc.perform(post("/likes/{postId}", INVALID_POSTID)
+        mockMvc.perform(post("/posts/{postId}/likes", INVALID_POSTID)
             .contentType(MediaType.APPLICATION_JSON)
             .session(session))
-            .andExpect(status().isBadRequest())
+            .andExpect(status().isNotFound())
             .andDo(print());
 
     }
@@ -91,7 +97,14 @@ public class PostLikeControllerTest {
     @Test
     @DisplayName("좋아요 취소 성공")
     public void unlike_success() throws Exception {
-        mockMvc.perform(delete("/likes/{postId}", TOBE_DELETED_LIKE_POSTID)
+        /* 좋아요 먼저 등록 */
+        mockMvc.perform(post("/posts/{postId}/likes", TOBE_DELETED_LIKE_POSTID)
+            .contentType(MediaType.APPLICATION_JSON)
+            .session(session))
+            .andExpect(status().isOk())
+            .andDo(print());
+
+        mockMvc.perform(delete("/posts/{postId}/likes", TOBE_DELETED_LIKE_POSTID)
             .contentType(MediaType.APPLICATION_JSON)
             .session(session))
             .andExpect(status().isOk())
@@ -102,10 +115,10 @@ public class PostLikeControllerTest {
     @Test
     @DisplayName("좋아요한 내역이 없어 좋아요 취소 실패")
     public void unlike_failure1() throws Exception {
-        mockMvc.perform(delete("/likes/{postId}", DELETED_LIKE_POSTID)
+        mockMvc.perform(delete("/posts/{postId}/likes", DELETED_LIKE_POSTID)
             .contentType(MediaType.APPLICATION_JSON)
             .session(session))
-            .andExpect(status().isBadRequest())
+            .andExpect(status().isNotFound())
             .andDo(print());
 
     }
@@ -113,10 +126,10 @@ public class PostLikeControllerTest {
     @Test
     @DisplayName("존재하지 않는 포스트이므로 좋아요 취소 실패")
     public void unlike_failure2() throws Exception {
-        mockMvc.perform(delete("/likes/{postId}", INVALID_POSTID)
+        mockMvc.perform(delete("/posts/{postId}/likes", INVALID_POSTID)
             .contentType(MediaType.APPLICATION_JSON)
             .session(session))
-            .andExpect(status().isBadRequest())
+            .andExpect(status().isNotFound())
             .andDo(print());
 
     }

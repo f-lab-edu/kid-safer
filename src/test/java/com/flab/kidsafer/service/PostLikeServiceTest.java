@@ -7,9 +7,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.flab.kidsafer.domain.PostLike;
 import com.flab.kidsafer.domain.User;
 import com.flab.kidsafer.dto.PostDTO;
-import com.flab.kidsafer.dto.PostLikeDTO;
 import com.flab.kidsafer.error.exception.PostNotFoundException;
 import com.flab.kidsafer.error.exception.UserNotFoundException;
 import com.flab.kidsafer.mapper.PostLikeMapper;
@@ -39,13 +39,16 @@ class PostLikeServiceTest {
     @Mock
     private PostMapper postMapper;
 
+    private PostLike postLike;
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 
-    public PostLikeDTO generatePostLike() {
-        return new PostLikeDTO.Builder().setId(1).setPostId(1).setUserId(1).build();
+    @BeforeEach
+    public void generatePostLike() {
+        postLike = new PostLike.Builder().id(1).postId(1).userId(1).build();
     }
 
     public User generateUser() {
@@ -60,8 +63,6 @@ class PostLikeServiceTest {
     @DisplayName("좋아요 성공")
     public void like_success() {
         // given
-        PostLikeDTO postLike = generatePostLike();
-
         doNothing().when(postLikeMapper).insertPostLike(postLike);
         when(userMapper.findById(postLike.getUserId())).thenReturn(generateUser());
         when(postMapper.findPostById(postLike.getPostId())).thenReturn(generatePost());
@@ -70,15 +71,13 @@ class PostLikeServiceTest {
         postLikeService.like(postLike.getPostId(), postLike.getUserId());
 
         // then
-        verify(postLikeMapper).insertPostLike(any(PostLikeDTO.class));
+        verify(postLikeMapper).insertPostLike(any(PostLike.class));
     }
 
     @Test
     @DisplayName("해당 유저 없어 좋아요 실패")
     public void like_failure() {
         // given
-        PostLikeDTO postLike = generatePostLike();
-
         doNothing().when(postLikeMapper).insertPostLike(postLike);
         when(userMapper.findById(postLike.getUserId())).thenReturn(null);
         when(postMapper.findPostById(postLike.getPostId())).thenReturn(generatePost());
@@ -96,8 +95,6 @@ class PostLikeServiceTest {
     @DisplayName("해당 포스트 없어 좋아요 실패")
     public void like_failure2() {
         // given
-        PostLikeDTO postLike = generatePostLike();
-
         doNothing().when(postLikeMapper).insertPostLike(postLike);
         when(userMapper.findById(postLike.getUserId())).thenReturn(generateUser());
         when(postMapper.findPostById(postLike.getPostId())).thenReturn(null);
@@ -115,25 +112,24 @@ class PostLikeServiceTest {
     @DisplayName("좋아요 취소 성공")
     public void unlike_success() {
         // given
-        PostLikeDTO postLike = new PostLikeDTO.Builder().setId(1).setPostId(1).setUserId(1).build();
-
         doNothing().when(postLikeMapper).deletePostLike(postLike);
         when(userMapper.findById(postLike.getUserId())).thenReturn(generateUser());
         when(postMapper.findPostById(postLike.getPostId())).thenReturn(generatePost());
+        when(
+            postLikeMapper.hasPostLikeByPostIdAndUserId(postLike.getPostId(), postLike.getUserId()))
+            .thenReturn(true);
 
         // when
         postLikeService.unlike(postLike.getPostId(), postLike.getUserId());
 
         // then
-        verify(postLikeMapper).deletePostLike(any(PostLikeDTO.class));
+        verify(postLikeMapper).deletePostLike(any(PostLike.class));
     }
 
     @Test
     @DisplayName("해당 유저가 좋아요 한 기록이 없어 좋아요 취소 실패")
     public void unlike_failure1() {
         // given
-        PostLikeDTO postLike = generatePostLike();
-
         doNothing().when(postLikeMapper).deletePostLike(postLike);
         when(userMapper.findById(postLike.getUserId())).thenReturn(generateUser());
         when(postMapper.findPostById(postLike.getPostId())).thenReturn(null);
@@ -150,8 +146,6 @@ class PostLikeServiceTest {
     @DisplayName("해당 유저가 없어 좋아요 취소 실패")
     public void unlike_failure2() {
         // given
-        PostLikeDTO postLike = generatePostLike();
-
         doNothing().when(postLikeMapper).insertPostLike(postLike);
         when(userMapper.findById(postLike.getUserId())).thenReturn(generateUser());
         when(postMapper.findPostById(postLike.getPostId())).thenReturn(null);

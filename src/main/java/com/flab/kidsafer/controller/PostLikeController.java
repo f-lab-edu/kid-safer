@@ -13,20 +13,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/likes")
+@RequestMapping("/posts/{postId}/likes")
 public class PostLikeController {
 
     @Autowired
-    PostLikeService postLikeService;
+    private PostLikeService postLikeService;
 
-    @PostMapping("/{postId}")
+    @PostMapping
     public ResponseEntity<PostLikeDTO> addLike(@PathVariable int postId,
         @LoginUser SessionUser user) {
         PostLikeDTO postLikeDTO = postLikeService.like(postId, user.getId());
         return ResponseEntity.ok(postLikeDTO);
     }
 
-    @DeleteMapping("/{postId}")
+    @DeleteMapping
     public void unLike(@PathVariable int postId,
         @LoginUser SessionUser user) {
         postLikeService.unlike(postId, user.getId());
