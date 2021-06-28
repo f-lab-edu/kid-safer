@@ -84,7 +84,7 @@ public class UserController {
         return ResponseEntity.ok("success");
     }
 
-    @PostMapping("/confIrmEmail")
+    @PostMapping("/confirmEmail")
     public ResponseEntity<User> confirmEmail(HttpSession httpSession, ModelAndView mav) {
 
         int userId = (Integer) httpSession.getAttribute(MEMBER_ID);
