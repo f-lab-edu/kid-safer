@@ -6,9 +6,12 @@ import com.flab.kidsafer.domain.SignInResponse;
 import com.flab.kidsafer.domain.SignInStatus;
 import com.flab.kidsafer.domain.User;
 import com.flab.kidsafer.domain.UserDto;
-import com.flab.kidsafer.error.exception.UserNotSignInException;
 import com.flab.kidsafer.dto.UserUpdateInfoRequest;
 import com.flab.kidsafer.dto.UserUpdatePasswordRequest;
+import com.flab.kidsafer.error.exception.EmailSendTimeException;
+import com.flab.kidsafer.error.exception.TokenInvalidException;
+import com.flab.kidsafer.error.exception.UserNotSignInException;
+import com.flab.kidsafer.error.exception.UserNotSignUpException;
 import com.flab.kidsafer.service.UserService;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -23,6 +26,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 @RestController
 @RequestMapping("/users")
@@ -64,8 +68,48 @@ public class UserController {
     }
 
     @PostMapping("/signUp")
-    public void signUp(@RequestBody UserDto userDto) {
-        userService.signUp(userDto);
+    public ResponseEntity<String> signUp(@RequestBody UserDto userDto, ModelAndView mav) {
+        User inserUser = userService.signUp(userDto);
+
+        if (inserUser == null) {
+            throw new UserNotSignUpException();
+        }
+
+        SignInRequest signInRequest = new SignInRequest.Builder(userDto.getEmail(),
+            userDto.getPassword())
+            .build();
+
+        userService.signIn(signInRequest);
+
+        return ResponseEntity.ok("success");
+    }
+
+    @PostMapping("/confirmEmail")
+    public ResponseEntity<User> confirmEmail(HttpSession httpSession, ModelAndView mav) {
+
+        int userId = (Integer) httpSession.getAttribute(MEMBER_ID);
+        User user = userService.finById(userId);
+
+        if (!user.canSendConfirmEmail()) {
+            throw new EmailSendTimeException();
+        }
+
+        userService.sendSignUpConfirmEmail(user);
+
+        return ResponseEntity.ok(user);
+    }
+
+    @GetMapping("/checkEmailToken")
+    public ResponseEntity<User> checkEamilToken(String token, String email) {
+        User user = userService.finByEmail(email);
+
+        if (user == null || !user.isValidToken(token)) {
+            throw new TokenInvalidException();
+        }
+
+        userService.completeSignUp(user);
+
+        return ResponseEntity.ok(user);
     }
 
     @GetMapping("/{userId}")

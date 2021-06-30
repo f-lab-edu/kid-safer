@@ -38,6 +38,63 @@ public class UserDto {
         this.status = status;
     }
 
+    public UserDto(Builder builder) {
+        this.email = builder.email;
+        this.password = builder.password;
+        this.nickname = builder.nickname;
+        this.phone = builder.phone;
+        this.type = builder.type;
+        this.status = builder.status;
+    }
+
+    public static class Builder {
+
+        private String email;
+        private String password;
+        private String nickname;
+        private String phone;
+        private String type;
+        private String status;
+
+        public Builder Builder() {
+            return this;
+        }
+
+        public UserDto.Builder email(String nickname) {
+            this.email = email;
+            return this;
+        }
+
+        public UserDto.Builder password(String nickname) {
+            this.password = password;
+            return this;
+        }
+
+        public UserDto.Builder type(String nickname) {
+            this.type = type;
+            return this;
+        }
+
+        public UserDto.Builder nickname(String nickname) {
+            this.nickname = nickname;
+            return this;
+        }
+
+        public UserDto.Builder phone(String phone) {
+            this.phone = phone;
+            return this;
+        }
+
+        public UserDto.Builder status(String status) {
+            this.status = status;
+            return this;
+        }
+
+        public UserDto build() {
+            return new UserDto(this);
+        }
+    }
+
     public String getEmail() {
         return email;
     }

@@ -1,9 +1,21 @@
 package com.flab.kidsafer.controller;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flab.kidsafer.domain.SignInRequest;
-import java.util.Objects;
+import com.flab.kidsafer.domain.User;
+import com.flab.kidsafer.error.exception.TokenInvalidException;
 import com.flab.kidsafer.error.exception.UserNotSignInException;
+import com.flab.kidsafer.mapper.UserMapper;
+import com.flab.kidsafer.utils.SHA256Util;
+import java.util.Objects;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,16 +26,12 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc /* 테스트에 사용할 가상의 WAS */
 @SpringBootTest
@@ -35,6 +43,8 @@ class UserControllerTest {
     private ObjectMapper objectMapper;
     @Autowired
     private WebApplicationContext ctx;
+    @Autowired
+    private UserMapper userMapper;
 
     @BeforeEach
     public void setup() {
@@ -54,7 +64,8 @@ class UserControllerTest {
         loginRequest.add("password", "");
 
         mockMvc.perform(post("/users/signIn")       // 요청을 전송하는 역할. 결과로 ResultActions 객체를 받음,
-            .params(loginRequest))                  // 키=값의 파라미터 전달(여러개일때는 params(), 한개일때는 param() 사용)
+            .params(
+                loginRequest))                  // 키=값의 파라미터 전달(여러개일때는 params(), 한개일때는 param() 사용)
             .andExpect(status().is(400))            // 응답을 검증하는 역할
             .andDo(print());                        // 응답/요청 전체 메시지 확인
     }
@@ -113,7 +124,39 @@ class UserControllerTest {
             .characterEncoding("uft-8")
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(rslt -> assertTrue(Objects.requireNonNull(rslt.getResolvedException())
-                                            .getClass()
-                                            .isAssignableFrom(UserNotSignInException.class)));
+                .getClass()
+                .isAssignableFrom(UserNotSignInException.class)));
+    }
+
+    @Test
+    @DisplayName("인증 메일 확인 - 입력값 오류")
+    void checkEmailToken_with_wrong_input() throws Exception {
+        mockMvc.perform(get("/users/checkEmailToken")
+            .param("token", "sdfjslwfwef")
+            .param("email", "email@email.com"))
+            .andExpect(rslt -> assertTrue(Objects.requireNonNull(rslt.getResolvedException())
+                .getClass()
+                .isAssignableFrom(TokenInvalidException.class)));
+    }
+
+    //    testdata Rollback을 위한 Transactional
+    @Transactional
+    @Test
+    @DisplayName("인증 메일 확인 - 입력값 정상")
+    void checkEmailToken() throws Exception {
+        User user = new User.Builder("test@email.com", "12345678", "ADMIN")
+            .nickname("leejun")
+            .build();
+        user.setPassword(SHA256Util.getSHA256(user.getPassword()));
+        userMapper.insertUser(user);
+        User newUser = userMapper.findByEmail(user.getEmail());
+        newUser.generateEmailCheckToken();
+
+        mockMvc.perform(get("/users/checkEmailToken")
+            .param("token", newUser.getEmailCheckToken())
+            .param("email", newUser.getEmail()))
+            .andExpect(status().isOk())
+            .andExpect(model().attributeExists("nickname"))
+            .andExpect(view().name("/users/checkedEmail"));
     }
 }

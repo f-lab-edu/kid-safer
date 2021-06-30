@@ -1,5 +1,7 @@
 package com.flab.kidsafer.service;
 
+import com.flab.kidsafer.config.AppProperties;
+import com.flab.kidsafer.mail.EmailMessage;
 import com.flab.kidsafer.domain.SignInRequest;
 import com.flab.kidsafer.domain.User;
 import com.flab.kidsafer.domain.UserDto;
@@ -10,6 +12,7 @@ import com.flab.kidsafer.error.exception.OperationNotAllowedException;
 import com.flab.kidsafer.error.exception.PasswordInputInvalidException;
 import com.flab.kidsafer.error.exception.UserNotAuthorizedException;
 import com.flab.kidsafer.error.exception.UserNotFoundException;
+import com.flab.kidsafer.mail.EmailService;
 import com.flab.kidsafer.mapper.UserMapper;
 import com.flab.kidsafer.utils.SHA256Util;
 import javax.validation.Valid;
@@ -17,7 +20,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserService {
@@ -39,6 +41,12 @@ public class UserService {
         return userMapper.findById(userId);
     }
 
+    @Autowired
+    private AppProperties appProperties;
+
+    @Autowired
+    private EmailService emailService;
+
     public User signIn(SignInRequest signInRequest) {
         LOGGER.info("signIn started");
         String email = signInRequest.getEmail();
@@ -55,14 +63,13 @@ public class UserService {
         return user;
     }
 
-    public void signUp(UserDto userDto) {
-        saveNewUser(userDto);
-
-        //TODO: 메일 보내기 추가 예정
-
+    public User signUp(UserDto userDto) {
+        User user = saveNewUser(userDto);
+        sendSignUpConfirmEmail(user);
+        return user;
     }
 
-    private void saveNewUser(@Valid UserDto userDto) {
+    private User saveNewUser(@Valid UserDto userDto) {
         User duplicationUser = userMapper.findByEmail(userDto.getEmail());
 
         if (duplicationUser != null) {
@@ -82,6 +89,48 @@ public class UserService {
         if (insertCount != 1) {
             throw new RuntimeException("회원가입 입력값을 확인해 주세요" + newUser);
         }
+
+        return newUser;
+    }
+
+    public User finByEmail(String email) {
+        return userMapper.findByEmail(email);
+    }
+
+    public User finById(int userId) {
+        return userMapper.findById(userId);
+    }
+
+    public void completeSignUp(User user) {
+        user.completeSignUp();
+        updateEmailStatus(user);
+    }
+
+    public void updateEmailStatus(User user) {
+        userMapper.updateEmailStatus(user);
+    }
+
+    public void sendSignUpConfirmEmail(User user) {
+        user.generateEmailCheckToken();
+        userMapper.updateEmailCheckTokenWithTime(user);
+        String link = "/check_email-token?token=" + user.getEmailCheckToken()
+            + "&email=" + user.getEmail();
+        String message =
+            "<!DOCTYPE html><html><head><title>kid-safer</title><meta charset='UTF-8'></head><body><div><div><h2>안녕하세요 "
+                + user.getNickname()
+                + "님</h2><p>서비스 가입을 완료하려면 아래 링크를 클릭하세요</p><div><a href='" + appProperties.getHost()
+                + link
+                + "'>가입인증</a><p>링크가 동작하지 않는 경우에는 아래 URL을 브라우저에 복사해서 붙여 넣으세요</p><small>"
+                + appProperties.getHost() + link
+                + "</small></div></div><br/><footer><small>safer&copy;2021</small></footer></div></body></html>";
+
+        EmailMessage emailMessage = new EmailMessage.Builder()
+            .to(user.getEmail())
+            .subject("회원 가입 인증")
+            .message(message)
+            .build();
+
+        emailService.sendEmail(emailMessage);
     }
 
     public void modifyUserInfo(UserUpdateInfoRequest userUpdateInfoRequest, int userId) {
