@@ -3,7 +3,7 @@ package com.flab.kidsafer.controller;
 import com.flab.kidsafer.config.auth.dto.SessionUser;
 import com.flab.kidsafer.domain.SignInRequest;
 import com.flab.kidsafer.domain.SignInResponse;
-import com.flab.kidsafer.domain.SignInStatus;
+import com.flab.kidsafer.domain.enums.SignInStatus;
 import com.flab.kidsafer.domain.User;
 import com.flab.kidsafer.domain.UserDto;
 import com.flab.kidsafer.dto.UserUpdateInfoRequest;
