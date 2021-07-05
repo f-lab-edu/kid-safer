@@ -1,8 +1,10 @@
 package com.flab.kidsafer.config;
 
+import com.flab.kidsafer.domain.enums.Status;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.type.TypeHandler;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.mybatis.spring.annotation.MapperScan;
@@ -56,6 +58,9 @@ public class DatabaseConfig {
         sessionFactory.setDataSource(dataSource);
         PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
         sessionFactory.setMapperLocations(resolver.getResources("classpath:mapper/*.xml"));
+        sessionFactory.setTypeHandlers(new TypeHandler[]{
+            new Status.TypeHandler()
+        });
         return sessionFactory.getObject();
     }
 
