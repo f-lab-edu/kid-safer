@@ -1,5 +1,6 @@
 package com.flab.kidsafer.mapper;
 
+import com.flab.kidsafer.domain.enums.Status;
 import com.flab.kidsafer.domain.User;
 import com.flab.kidsafer.dto.UserUpdateInfoRequest;
 import org.apache.ibatis.annotations.Mapper;
@@ -21,8 +22,9 @@ public interface UserMapper {
 
     void updateUserPassword(int userId, String password);
 
-
     void updateEmailCheckTokenWithTime(User user);
 
     void updateEmailStatus(User user);
+
+    void updateUserStatus(int userId, Status status);
 }
