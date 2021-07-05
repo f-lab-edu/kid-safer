@@ -13,8 +13,7 @@
   <insert id="registerPost" parameterType="com.flab.kidsafer.dto.PostDTO">
     INSERT INTO
     posts
-    (id,
-    parentId,
+    (parentId,
     districtId,
     title,
     contents,
@@ -27,7 +26,6 @@
     )
     VALUES
     (
-    #{id},
     #{parentId},
     #{districtId},
     #{title},

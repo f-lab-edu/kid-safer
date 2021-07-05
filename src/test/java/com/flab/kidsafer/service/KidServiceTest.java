@@ -1,26 +1,19 @@
 package com.flab.kidsafer.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.flab.kidsafer.domain.Kid;
-import com.flab.kidsafer.domain.SignInRequest;
-import com.flab.kidsafer.domain.User;
-import com.flab.kidsafer.error.exception.KidBirthYearInvalidException;
 import com.flab.kidsafer.error.exception.KidNotFoundException;
 import com.flab.kidsafer.mapper.KidMapper;
-import com.flab.kidsafer.mapper.UserMapper;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-@AutoConfigureMockMvc
 class KidServiceTest {
 
     @Autowired
@@ -56,7 +49,7 @@ class KidServiceTest {
         Kid getKid = kidService.getOneKid(id);
 
         //then
-        assertEquals(kid, getKid);
+        assertEquals(kid.getId(), getKid.getId());
     }
 
     @Test
@@ -78,7 +71,7 @@ class KidServiceTest {
         //then
         assertEquals(getKid.size(), 0);
     }
-    
+
     @Test
     @DisplayName("아이 존재시 삭제 성공")
     public void deleteKid_sucess() {

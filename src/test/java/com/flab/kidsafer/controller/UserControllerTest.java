@@ -35,6 +35,7 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 
 @AutoConfigureMockMvc /* 테스트에 사용할 가상의 WAS */
 @SpringBootTest
+@Transactional
 class UserControllerTest {
 
     @Autowired
