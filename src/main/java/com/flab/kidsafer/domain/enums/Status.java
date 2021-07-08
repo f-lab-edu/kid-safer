@@ -2,6 +2,7 @@ package com.flab.kidsafer.domain.enums;
 
 import com.flab.kidsafer.mybatis.handler.CodeEnumTypeHandler;
 import org.apache.ibatis.type.MappedTypes;
+import org.springframework.stereotype.Component;
 
 public enum Status implements CodeEnum {
     BLOCKED(-1),
@@ -32,6 +33,7 @@ public enum Status implements CodeEnum {
         return String.valueOf(value);
     }
 
+    @Component
     @MappedTypes(Status.class)
     public static class TypeHandler extends CodeEnumTypeHandler<Status> {
 

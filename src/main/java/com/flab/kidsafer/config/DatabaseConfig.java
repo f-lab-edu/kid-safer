@@ -1,13 +1,14 @@
 package com.flab.kidsafer.config;
 
-import com.flab.kidsafer.domain.enums.Status;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import java.util.List;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.type.TypeHandler;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,6 +35,13 @@ import javax.sql.DataSource;
 @MapperScan(basePackages = "com.flab.kidsafer.mapper")
 public class DatabaseConfig {
 
+    @Autowired
+    private final List<TypeHandler<?>> typeHandlers;
+
+    public DatabaseConfig(List<TypeHandler<?>> typeHandlers) {
+        this.typeHandlers = typeHandlers;
+    }
+
     @Bean
     @ConfigurationProperties(prefix = "spring.datasource.hikari")
     public HikariConfig hikariConfig() {
@@ -58,9 +66,7 @@ public class DatabaseConfig {
         sessionFactory.setDataSource(dataSource);
         PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
         sessionFactory.setMapperLocations(resolver.getResources("classpath:mapper/*.xml"));
-        sessionFactory.setTypeHandlers(new TypeHandler[]{
-            new Status.TypeHandler()
-        });
+        sessionFactory.setTypeHandlers(typeHandlers.toArray(new TypeHandler[typeHandlers.size()]));
         return sessionFactory.getObject();
     }
 
