@@ -25,10 +25,12 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
 @AutoConfigureMockMvc
+@Transactional
 @SpringBootTest
 class PostControllerTest {
 
@@ -195,7 +197,7 @@ class PostControllerTest {
         loginUser = new SessionUser(user);
         session.setAttribute("user", loginUser);
 
-        mockMvc.perform(delete("/posts/2")
+        mockMvc.perform(delete("/posts/1")
             .characterEncoding("uft-8")
             .session(session)
             .contentType(MediaType.APPLICATION_JSON))

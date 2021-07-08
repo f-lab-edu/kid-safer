@@ -9,30 +9,52 @@ import com.flab.kidsafer.error.exception.PasswordInputInvalidException;
 import com.flab.kidsafer.error.exception.UserNotFoundException;
 import com.flab.kidsafer.mapper.UserMapper;
 import com.flab.kidsafer.utils.SHA256Util;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
-@AutoConfigureMockMvc
 class UserServiceTest {
 
     private static final String MEMBER_ID = "MEMBER_ID";
 
-    @Autowired
+    @Mock
     private UserMapper userMapper;
-    @Autowired
+    @InjectMocks
     private UserService userService;
+
+    private UserUpdatePasswordRequest userUpdatePasswordRequest;
+
+    @BeforeEach
+    public void initData() {
+        userUpdatePasswordRequest = new UserUpdatePasswordRequest.Builder()
+            .setUserId(1).setCurrentPassword("1234!abc").setModifiedPassword("12345").build();
+    }
+
+    @BeforeEach
+    public void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
 
     @Test
     @DisplayName("DB에 등록된 대상자 로그인 성공")
     public void signInTest_success() {
         //given
         SignInRequest loginRequest = new SignInRequest("cjk@gmail.com", "1234!abc");
+        when(userMapper.findByEmailAndPassword(loginRequest.getEmail(),
+            SHA256Util.getSHA256(loginRequest.getPassword())))
+            .thenReturn(new User.Builder("cjk@gmail.com", "1234!abc", "A").build());
 
         //when
         User user = userService.signIn(loginRequest);
@@ -76,15 +98,14 @@ class UserServiceTest {
         UserUpdateInfoRequest userUpdateInfoRequest = new UserUpdateInfoRequest.Builder()
             .setUserId(1).setNickname("테스트").setPhone("010-1234-5670").build();
         int userId = 1;
+        when(userMapper.findById(userUpdateInfoRequest.getUserId()))
+            .thenReturn(new User.Builder("cjk@gmail.com", "1234!abc", "A").build());
 
         //when
         userService.modifyUserInfo(userUpdateInfoRequest, userId);
 
-        User user = userService.getUserById(userId);
-
         //then
-        assertEquals(userUpdateInfoRequest.getNickname(), user.getNickname());
-        assertEquals(userUpdateInfoRequest.getPhone(), user.getPhone());
+        verify(userMapper).updateUserInfo(any(UserUpdateInfoRequest.class));
     }
 
     @Test
@@ -94,28 +115,40 @@ class UserServiceTest {
         UserUpdatePasswordRequest userUpdatePasswordRequest = new UserUpdatePasswordRequest.Builder()
             .setUserId(1).setCurrentPassword("xptmxm").setModifiedPassword("xptmxm").build();
         int userId = 1;
+        when(userMapper.findById(userUpdatePasswordRequest.getUserId()))
+            .thenReturn(new User.Builder("cjk@gmail.com", "1234!abc", "A").build());
 
         //then
         assertThrows(PasswordInputInvalidException.class,
             () -> {
                 userService.changePassword(userUpdatePasswordRequest, userId);   //when
             });
+        verify(userMapper, times(0)).updateUserPassword(userUpdatePasswordRequest.getUserId(),
+            userUpdatePasswordRequest.getModifiedPassword());
     }
 
     @Test
     @DisplayName("비밀번호 변경 성공")
     public void changePassword_success() {
         //given
-        UserUpdatePasswordRequest userUpdatePasswordRequest = new UserUpdatePasswordRequest.Builder()
-            .setUserId(1).setCurrentPassword("1234!abc").setModifiedPassword("12345").build();
-        int userId = 1;
+        String encryptPassword = SHA256Util
+            .getSHA256(userUpdatePasswordRequest.getCurrentPassword());
+        String encryptModiPassword = SHA256Util
+            .getSHA256(userUpdatePasswordRequest.getModifiedPassword());
+
+        when(userMapper.findById(userUpdatePasswordRequest.getUserId()))
+            .thenReturn((new User.Builder("cjk@gmail.com",
+                encryptPassword, "A")
+                .build()));
+        doNothing().when(userMapper)
+            .updateUserPassword(userUpdatePasswordRequest.getUserId(), encryptModiPassword);
 
         //when
-        userService.changePassword(userUpdatePasswordRequest, userId);
+        userService
+            .changePassword(userUpdatePasswordRequest, userUpdatePasswordRequest.getUserId());
 
-        //then
-        User user = userService.getUserById(userId);
-        assertEquals(SHA256Util.getSHA256(userUpdatePasswordRequest.getModifiedPassword()),
-            user.getPassword());
+        // then
+        verify(userMapper)
+            .updateUserPassword(userUpdatePasswordRequest.getUserId(), encryptModiPassword);
     }
 }

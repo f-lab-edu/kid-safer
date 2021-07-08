@@ -4,13 +4,13 @@
 
 <mapper namespace="com.flab.kidsafer.mapper.UserMapper">
   <select id="findById" resultType="com.flab.kidsafer.domain.User">
-    SELECT id, email, password, nickname, phone, address, type, status
+    SELECT id, email, password, nickname, phone, type, status
     FROM user
     WHERE id = #{userId}
   </select>
 
   <select id="findByIdAndPassword" resultType="com.flab.kidsafer.domain.User">
-    SELECT id, email, password, nickname, phone, address, type, status
+    SELECT id, email, password, nickname, phone, type, status
     FROM user
     WHERE id = #{userId}
     AND password = #{password}
@@ -20,7 +20,7 @@
     SELECT id, email, password, nickname, phone, type, status
     FROM user
     WHERE email = #{email}
-      AND password = #{password}
+    AND password = #{password}
   </select>
 
   <insert id="insertUser" parameterType="com.flab.kidsafer.domain.User">
@@ -49,15 +49,15 @@
 
   <update id="updateEmailCheckTokenWithTime" parameterType="com.flab.kidsafer.domain.User">
     update
-      user
+    user
     set email_token_generated_date = #{emailCheckTokenGeneratedAt},
-        email_token                = #{emailCheckToken}
+    email_token = #{emailCheckToken}
     where email = #{email}
   </update>
 
   <update id="updateEmailStatus" parameterType="com.flab.kidsafer.domain.User">
     update
-      user
+    user
     set status = #{status}
     where email = #{email}
   </update>
