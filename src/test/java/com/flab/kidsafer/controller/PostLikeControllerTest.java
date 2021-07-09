@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.flab.kidsafer.config.auth.dto.SessionUser;
 import com.flab.kidsafer.domain.User;
+import com.flab.kidsafer.domain.enums.UserType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,18 +18,20 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 public class PostLikeControllerTest {
 
     private static int INVALID_POSTID = -999;
     private static int VALID_POSTID = 1;
-    private static int ALREADY_LIKE_POSTID = 2;
+    private static int ALREADY_LIKE_POSTID = 1;
     private static int DELETED_LIKE_POSTID = 3;
-    private static int TOBE_DELETED_LIKE_POSTID = 4;
+    private static int TOBE_DELETED_LIKE_POSTID = 1;
 
     @Autowired
     private MockMvc mockMvc;
@@ -49,7 +52,7 @@ public class PostLikeControllerTest {
 
     @BeforeEach
     public void setSessionUserAndPostId() {
-        User user = new User(1, "1234", "test@test", "test", "test", "PARENT", "DEFAULT");
+        User user = new User(1, "1234", "test@test", "test", "test", UserType.PARENT, "DEFAULT");
         loginUser = new SessionUser(user);
         session = new MockHttpSession();
         session.setAttribute("user", loginUser);
@@ -58,12 +61,6 @@ public class PostLikeControllerTest {
     @Test
     @DisplayName("좋아요 성공")
     public void like_success() throws Exception {
-        /* 기존 좋아요 내역 취소 */
-        mockMvc.perform(delete("/posts/{postId}/likes", VALID_POSTID)
-            .contentType(MediaType.APPLICATION_JSON)
-            .session(session))
-            .andExpect(status().isOk())
-            .andDo(print());
         mockMvc.perform(post("/posts/{postId}/likes", VALID_POSTID)
             .contentType(MediaType.APPLICATION_JSON)
             .session(session))
@@ -75,6 +72,11 @@ public class PostLikeControllerTest {
     @Test
     @DisplayName("이미 좋아요를 한 post에 다시 좋아요 시도해 실패")
     public void like_failure1() throws Exception {
+        mockMvc.perform(post("/posts/{postId}/likes", ALREADY_LIKE_POSTID)
+            .contentType(MediaType.APPLICATION_JSON)
+            .session(session))
+            .andExpect(status().isOk())
+            .andDo(print());
         mockMvc.perform(post("/posts/{postId}/likes", ALREADY_LIKE_POSTID)
             .contentType(MediaType.APPLICATION_JSON)
             .session(session))

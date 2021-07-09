@@ -2,6 +2,7 @@ package com.flab.kidsafer.service;
 
 import com.flab.kidsafer.domain.SignInRequest;
 import com.flab.kidsafer.domain.User;
+import com.flab.kidsafer.domain.enums.UserType;
 import com.flab.kidsafer.dto.UserUpdateInfoRequest;
 import com.flab.kidsafer.dto.UserUpdatePasswordRequest;
 import com.flab.kidsafer.error.exception.OperationNotAllowedException;
@@ -54,7 +55,7 @@ class UserServiceTest {
         SignInRequest loginRequest = new SignInRequest("cjk@gmail.com", "1234!abc");
         when(userMapper.findByEmailAndPassword(loginRequest.getEmail(),
             SHA256Util.getSHA256(loginRequest.getPassword())))
-            .thenReturn(new User.Builder("cjk@gmail.com", "1234!abc", "A").build());
+            .thenReturn(new User.Builder("cjk@gmail.com", "1234!abc", UserType.PARENT).build());
 
         //when
         User user = userService.signIn(loginRequest);
@@ -99,7 +100,7 @@ class UserServiceTest {
             .setUserId(1).setNickname("테스트").setPhone("010-1234-5670").build();
         int userId = 1;
         when(userMapper.findById(userUpdateInfoRequest.getUserId()))
-            .thenReturn(new User.Builder("cjk@gmail.com", "1234!abc", "A").build());
+            .thenReturn(new User.Builder("cjk@gmail.com", "1234!abc", UserType.PARENT).build());
 
         //when
         userService.modifyUserInfo(userUpdateInfoRequest, userId);
@@ -116,7 +117,7 @@ class UserServiceTest {
             .setUserId(1).setCurrentPassword("xptmxm").setModifiedPassword("xptmxm").build();
         int userId = 1;
         when(userMapper.findById(userUpdatePasswordRequest.getUserId()))
-            .thenReturn(new User.Builder("cjk@gmail.com", "1234!abc", "A").build());
+            .thenReturn(new User.Builder("cjk@gmail.com", "1234!abc", UserType.PARENT).build());
 
         //then
         assertThrows(PasswordInputInvalidException.class,
@@ -138,7 +139,7 @@ class UserServiceTest {
 
         when(userMapper.findById(userUpdatePasswordRequest.getUserId()))
             .thenReturn((new User.Builder("cjk@gmail.com",
-                encryptPassword, "A")
+                encryptPassword, UserType.PARENT)
                 .build()));
         doNothing().when(userMapper)
             .updateUserPassword(userUpdatePasswordRequest.getUserId(), encryptModiPassword);
