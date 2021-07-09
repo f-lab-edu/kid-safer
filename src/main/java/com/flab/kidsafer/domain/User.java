@@ -1,6 +1,7 @@
 package com.flab.kidsafer.domain;
 
 import com.flab.kidsafer.domain.enums.Status;
+import com.flab.kidsafer.domain.enums.UserType;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -11,14 +12,14 @@ public class User {
     private String email;
     private String nickname;
     private String phone;
-    private String type;
+    private UserType type;
     private Status status;
     private String emailCheckToken;
 
     private LocalDateTime emailCheckTokenGeneratedAt;
 
     public User(int userId, String password, String email, String nickname, String phone,
-        String type,
+        UserType type,
         Status status) {
         this.userId = userId;
         this.password = password;
@@ -78,11 +79,11 @@ public class User {
         this.phone = phone;
     }
 
-    public String getType() {
+    public UserType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(UserType type) {
         this.type = type;
     }
 
@@ -108,10 +109,10 @@ public class User {
         private String password;
         private String nickname;
         private String phone;
-        private String type;
+        private UserType type;
         private Status status;
 
-        public Builder(String email, String password, String type) {
+        public Builder(String email, String password, UserType type) {
             this.email = email;
             this.password = password;
             this.type = type;
