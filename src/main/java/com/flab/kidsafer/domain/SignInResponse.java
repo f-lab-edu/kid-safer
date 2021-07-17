@@ -1,5 +1,7 @@
 package com.flab.kidsafer.domain;
 
+import com.flab.kidsafer.domain.enums.SignInStatus;
+
 public class SignInResponse {
 
     private SignInStatus status;

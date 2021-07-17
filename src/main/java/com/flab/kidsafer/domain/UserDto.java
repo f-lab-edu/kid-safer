@@ -1,5 +1,6 @@
 package com.flab.kidsafer.domain;
 
+import com.flab.kidsafer.domain.enums.Status;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -26,10 +27,10 @@ public class UserDto {
     @NotNull(message = "Null은 포함될 수 없습니다.")
     private String type;
 
-    private String status;
+    private Status status;
 
     public UserDto(String email, String password, String nickname, String phone,
-        String type, String status) {
+        String type, Status status) {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
@@ -54,23 +55,23 @@ public class UserDto {
         private String nickname;
         private String phone;
         private String type;
-        private String status;
+        private Status status;
 
         public Builder Builder() {
             return this;
         }
 
-        public UserDto.Builder email(String nickname) {
+        public UserDto.Builder email(String email) {
             this.email = email;
             return this;
         }
 
-        public UserDto.Builder password(String nickname) {
+        public UserDto.Builder password(String password) {
             this.password = password;
             return this;
         }
 
-        public UserDto.Builder type(String nickname) {
+        public UserDto.Builder type(String type) {
             this.type = type;
             return this;
         }
@@ -85,7 +86,7 @@ public class UserDto {
             return this;
         }
 
-        public UserDto.Builder status(String status) {
+        public UserDto.Builder status(Status status) {
             this.status = status;
             return this;
         }
@@ -115,7 +116,7 @@ public class UserDto {
         return type;
     }
 
-    public String getStatus() {
+    public Status getStatus() {
         return status;
     }
 

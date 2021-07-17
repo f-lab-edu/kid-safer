@@ -62,4 +62,10 @@
     where email = #{email}
   </update>
 
+  <update id="updateUserStatus">
+    UPDATE
+      user
+    SET status = #{status}
+    WHERE id = #{userId}
+  </update>
 </mapper>

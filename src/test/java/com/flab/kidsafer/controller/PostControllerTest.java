@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flab.kidsafer.config.auth.dto.SessionUser;
+import com.flab.kidsafer.domain.enums.Status;
 import com.flab.kidsafer.domain.User;
 import com.flab.kidsafer.dto.PostDTO;
 import java.time.LocalDate;
@@ -56,7 +57,7 @@ class PostControllerTest {
 
     @BeforeEach
     public void setSessionUser() {
-        user = new User(1, "1234", "test@test", "test", "test", "PARENT", "DEFAULT");
+        user = new User(1, "1234", "test@test", "test", "test", "PARENT", Status.DEFAULT);
         loginUser = new SessionUser(user);
         session = new MockHttpSession();
         session.setAttribute("user", loginUser);

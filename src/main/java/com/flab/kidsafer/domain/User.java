@@ -1,5 +1,6 @@
 package com.flab.kidsafer.domain;
 
+import com.flab.kidsafer.domain.enums.Status;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -11,14 +12,14 @@ public class User {
     private String nickname;
     private String phone;
     private String type;
-    private String status;
+    private Status status;
     private String emailCheckToken;
 
     private LocalDateTime emailCheckTokenGeneratedAt;
 
     public User(int userId, String password, String email, String nickname, String phone,
         String type,
-        String status) {
+        Status status) {
         this.userId = userId;
         this.password = password;
         this.email = email;
@@ -85,11 +86,11 @@ public class User {
         this.type = type;
     }
 
-    public String getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 
@@ -108,7 +109,7 @@ public class User {
         private String nickname;
         private String phone;
         private String type;
-        private String status;
+        private Status status;
 
         public Builder(String email, String password, String type) {
             this.email = email;
@@ -126,7 +127,7 @@ public class User {
             return this;
         }
 
-        public User.Builder status(String status) {
+        public User.Builder status(Status status) {
             this.status = status;
             return this;
         }
@@ -142,7 +143,7 @@ public class User {
     }
 
     public void completeSignUp() {
-        this.status = "true";
+        this.status = Status.DEFAULT;
     }
 
     public boolean isValidToken(String token) {
