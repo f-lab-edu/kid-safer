@@ -156,8 +156,6 @@ class UserControllerTest {
         mockMvc.perform(get("/users/checkEmailToken")
             .param("token", newUser.getEmailCheckToken())
             .param("email", newUser.getEmail()))
-            .andExpect(status().isOk())
-            .andExpect(model().attributeExists("nickname"))
-            .andExpect(view().name("/users/checkedEmail"));
+            .andExpect(status().isOk());
     }
 }
