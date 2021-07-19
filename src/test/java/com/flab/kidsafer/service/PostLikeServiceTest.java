@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 
 import com.flab.kidsafer.domain.PostLike;
 import com.flab.kidsafer.domain.User;
+import com.flab.kidsafer.domain.enums.UserType;
 import com.flab.kidsafer.dto.PostDTO;
 import com.flab.kidsafer.error.exception.PostNotFoundException;
 import com.flab.kidsafer.error.exception.UserNotFoundException;
@@ -52,7 +53,7 @@ class PostLikeServiceTest {
     }
 
     public User generateUser() {
-        return new User.Builder("test", "test", "test").build();
+        return new User.Builder("test", "test", UserType.PARENT).build();
     }
 
     public PostDTO generatePost() {

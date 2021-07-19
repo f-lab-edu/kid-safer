@@ -2,6 +2,7 @@ package com.flab.kidsafer.config.auth.dto;
 
 import com.flab.kidsafer.domain.enums.Status;
 import com.flab.kidsafer.domain.User;
+import com.flab.kidsafer.domain.enums.UserType;
 import java.io.Serializable;
 
 public class SessionUser implements Serializable {
@@ -10,7 +11,7 @@ public class SessionUser implements Serializable {
 
     private int id;
     private String email;
-    private String type;
+    private UserType type;
     private Status status;
 
     public SessionUser(User user) {
@@ -28,7 +29,7 @@ public class SessionUser implements Serializable {
         return email;
     }
 
-    public String getType() {
+    public UserType getType() {
         return type;
     }
 

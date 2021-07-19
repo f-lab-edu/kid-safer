@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flab.kidsafer.config.auth.dto.SessionUser;
 import com.flab.kidsafer.domain.enums.Status;
 import com.flab.kidsafer.domain.User;
+import com.flab.kidsafer.domain.enums.UserType;
 import com.flab.kidsafer.dto.PostDTO;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -57,7 +58,7 @@ class PostControllerTest {
 
     @BeforeEach
     public void setSessionUser() {
-        user = new User(1, "1234", "test@test", "test", "test", "PARENT", Status.DEFAULT);
+        user = new User(1, "1234", "test@test", "test", "test", UserType.PARENT, Status.DEFAULT);
         loginUser = new SessionUser(user);
         session = new MockHttpSession();
         session.setAttribute("user", loginUser);
@@ -78,7 +79,7 @@ class PostControllerTest {
     public void getOnePost_failure() throws Exception {
         mockMvc.perform(get("/posts/9999")
             .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest())
+            .andExpect(status().isNotFound())
             .andDo(print());
 
     }

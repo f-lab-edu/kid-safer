@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flab.kidsafer.domain.SignInRequest;
 import com.flab.kidsafer.domain.User;
+import com.flab.kidsafer.domain.enums.UserType;
 import com.flab.kidsafer.error.exception.TokenInvalidException;
 import com.flab.kidsafer.error.exception.UserNotSignInException;
 import com.flab.kidsafer.mapper.UserMapper;
@@ -145,7 +146,7 @@ class UserControllerTest {
     @Test
     @DisplayName("인증 메일 확인 - 입력값 정상")
     void checkEmailToken() throws Exception {
-        User user = new User.Builder("test@email.com", "12345678", "ADMIN")
+        User user = new User.Builder("test@email.com", "12345678", UserType.ADMIN)
             .nickname("leejun")
             .build();
         user.setPassword(SHA256Util.getSHA256(user.getPassword()));

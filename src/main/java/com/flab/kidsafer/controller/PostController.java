@@ -2,6 +2,7 @@ package com.flab.kidsafer.controller;
 
 import com.flab.kidsafer.config.auth.LoginUser;
 import com.flab.kidsafer.config.auth.dto.SessionUser;
+import com.flab.kidsafer.domain.enums.UserType;
 import com.flab.kidsafer.dto.PostDTO;
 import com.flab.kidsafer.error.exception.OperationNotAllowedException;
 import com.flab.kidsafer.service.PostService;
@@ -32,7 +33,7 @@ public class PostController {
 
     @PostMapping
     public void registerPost(@RequestBody @Valid PostDTO postDTO, @LoginUser SessionUser user) {
-        if(!"PARENT".equals(user.getType()))  //TODO : enum타입으로 변경 예정
+        if(user.getType() != UserType.PARENT)
             throw new OperationNotAllowedException();
         postService.registerPost(postDTO);
     }
