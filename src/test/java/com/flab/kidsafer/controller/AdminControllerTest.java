@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.flab.kidsafer.config.auth.dto.SessionUser;
 import com.flab.kidsafer.domain.User;
 import com.flab.kidsafer.domain.enums.Status;
+import com.flab.kidsafer.domain.enums.UserType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -49,14 +50,14 @@ public class AdminControllerTest {
 
     @BeforeEach
     public void setSessionUser() {
-        User user = new User(1, "1234", "test@test", "test", "test", "ADMIN", Status.DEFAULT);
+        User user = new User(1, "1234", "test@test", "test", "test", UserType.ADMIN, Status.DEFAULT);
         loginUser = new SessionUser(user);
         session = new MockHttpSession();
         session.setAttribute("user", loginUser);
     }
 
     public void setSessionUserNotAdmin() {
-        User user = new User(1, "1234", "test@test", "test", "test", "PARENT", Status.DEFAULT);
+        User user = new User(1, "1234", "test@test", "test", "test", UserType.PARENT, Status.DEFAULT);
         loginUser = new SessionUser(user);
         session = new MockHttpSession();
         session.setAttribute("user", loginUser);

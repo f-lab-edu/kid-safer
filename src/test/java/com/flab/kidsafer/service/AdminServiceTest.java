@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 
 import com.flab.kidsafer.domain.User;
 import com.flab.kidsafer.domain.enums.Status;
+import com.flab.kidsafer.domain.enums.UserType;
 import com.flab.kidsafer.error.exception.UserNotFoundException;
 import com.flab.kidsafer.mapper.UserMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,7 +41,7 @@ public class AdminServiceTest {
 
     @BeforeEach
     public void initData() {
-        user = new User.Builder("test@test.com", "test", "A").build();
+        user = new User.Builder("test@test.com", "test", UserType.ADMIN).build();
     }
 
     @Test

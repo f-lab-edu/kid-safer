@@ -10,6 +10,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flab.kidsafer.config.auth.dto.SessionUser;
 import com.flab.kidsafer.domain.User;
+import com.flab.kidsafer.domain.enums.Status;
+import com.flab.kidsafer.domain.enums.UserType;
 import com.flab.kidsafer.dto.PostCommentDTO;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,7 +43,6 @@ class CommentControllerTest {
     private WebApplicationContext ctx;
 
     private User user;
-    private User user2;
 
     private SessionUser loginUser;
 
@@ -59,15 +60,34 @@ class CommentControllerTest {
 
         LocalDateTime currentTime = LocalDateTime.now();
 
-        코멘트실패 = new PostCommentDTO(1, 1, 1, 0, null, 1, currentTime, currentTime, null,
-            "Y");
-        첫번째코멘트 = new PostCommentDTO(1, 1, -1, 0, "첫번째 댓글 입니다.", 1, currentTime, currentTime, null,
-            "Y");
+        코멘트실패 = new PostCommentDTO.Builder()
+            .commentLevel(1)
+            .commentId(-1)
+            .commentParentId(0)
+            .commentWriterId(1)
+            .role(null)
+            .commentStatus("Y")
+            .build();
+
+        첫번째코멘트 = new PostCommentDTO.Builder()
+            .commentLevel(1)
+            .postId(1)
+            .commentId(-1)
+            .commentParentId(0)
+            .commentContent("첫번째 댓글 입니다.")
+            .commentWriterId(1)
+            .role(null)
+            .commentStatus("Y")
+            .build();
     }
 
     @BeforeEach
     public void setSessionUser() {
-        user = new User(1, "1234", "test@test", "test", "test", "PARENT", "DEFAULT");
+        user = new User.Builder("1234", "test@test", UserType.ADMIN)
+            .status(Status.DEFAULT)
+            .nickname("test")
+            .build();
+
         loginUser = new SessionUser(user);
         session = new MockHttpSession();
         session.setAttribute("user", loginUser);
@@ -88,7 +108,7 @@ class CommentControllerTest {
     @DisplayName("코멘트 데이터 등록 실패")
     public void createCommentFail() throws Exception {
         //when
-        final ResultActions resultActions = requestRegisterComment(코멘트실패);
+        final ResultActions resultActions = requestRegisterComment(코멘트실패, session);
 
         //then
         resultActions.andExpect(status().isBadRequest());
@@ -99,7 +119,7 @@ class CommentControllerTest {
     @DisplayName("코멘트 데이터 등록 성공")
     public void createCommentSuceess() throws Exception {
         //when
-        final ResultActions resultActions = requestRegisterComment(첫번째코멘트);
+        final ResultActions resultActions = requestRegisterComment(첫번째코멘트, session);
 
         //then
         resultActions.andExpect(status().isOk());
@@ -137,11 +157,13 @@ class CommentControllerTest {
             .andDo(print());
     }
 
-    public ResultActions requestRegisterComment(PostCommentDTO postCommentDTO)
+    public ResultActions requestRegisterComment(PostCommentDTO postCommentDTO,
+        MockHttpSession seesionUser)
         throws Exception {
 
         return mockMvc.perform(post("/posts/{postId}/comments", postCommentDTO.getPostId())
             .contentType(MediaType.APPLICATION_JSON)
+            .session(seesionUser)
             .content(objectMapper.writeValueAsString(postCommentDTO)))
             .andDo(print());
     }

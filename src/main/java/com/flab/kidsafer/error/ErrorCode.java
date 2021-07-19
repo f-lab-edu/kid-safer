@@ -26,7 +26,7 @@ public enum ErrorCode {
     // Post
     POST_NOT_FOUND(404, "P001", "해당하는 게시글이 없습니다"),
 
-    // Post
+    // Comment
     COMMENT_NOT_FOUND(404, "CM001", "해당하는 댓글이 없습니다");
 
     private final String code;

@@ -2,15 +2,24 @@ package com.flab.kidsafer.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import com.flab.kidsafer.domain.PostComment;
 import com.flab.kidsafer.dto.PostCommentDTO;
 import com.flab.kidsafer.error.exception.OperationNotAllowedException;
-import java.time.LocalDateTime;
+import com.flab.kidsafer.mapper.CommentMapper;
+import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,34 +28,62 @@ import org.springframework.transaction.annotation.Transactional;
 @AutoConfigureMockMvc
 class CommentServiceTest {
 
-    @Autowired
+    @InjectMocks
     private CommentService commentService;
 
-    private PostCommentDTO 첫번째코멘트;
-    private PostCommentDTO 두번째코멘트;
+    @Mock
+    private CommentMapper commentMapper;
 
-    private final int userIdFrist = 1;
-    private final int userIdSecond = 2;
+    private PostCommentDTO 첫번째코멘트DTO;
+    private PostCommentDTO 두번째코멘트DTO;
+
+    private PostComment 첫번째코멘트;
+    private PostComment 두번째코멘트;
+
+    private final int firstUserId = 1;
+    private final int secondUserId = 2;
 
     @BeforeEach
     public void setUp() {
-        LocalDateTime currentTime = LocalDateTime.now();
-        첫번째코멘트 = new PostCommentDTO(1, 999, 1, 0, "첫번째 댓글 입니다.", userIdFrist, currentTime,
-            currentTime, null,
-            null);
-        두번째코멘트 = new PostCommentDTO(1, 999, 1, 0, "두번째 댓글 입니다.", userIdFrist, currentTime,
-            currentTime, null,
-            null);
+        첫번째코멘트DTO = new PostCommentDTO.Builder()
+            .commentLevel(1)
+            .postId(1)
+            .commentId(1)
+            .commentParentId(0)
+            .commentContent("첫번째 댓글 입니다.")
+            .commentWriterId(firstUserId)
+            .role(null)
+            .commentStatus(null)
+            .build();
+
+        두번째코멘트DTO = new PostCommentDTO.Builder()
+            .commentLevel(1)
+            .postId(1)
+            .commentId(2)
+            .commentParentId(0)
+            .commentContent("두번째 댓글 입니다.")
+            .commentWriterId(secondUserId)
+            .role(null)
+            .commentStatus(null)
+            .build();
+
+        첫번째코멘트 = new PostComment(첫번째코멘트DTO);
+        두번째코멘트 = new PostComment(두번째코멘트DTO);
     }
 
+    public List<PostComment> generateComment() {
+        return new ArrayList<PostComment>(){
+            {this.add(첫번째코멘트); this.add(두번째코멘트);}
+        };
+    }
     @Test
     @DisplayName("댓글 조회 실패")
     public void getCommentFailure() {
         //given
         int id = -1;
 
-        //wehn
-        List<PostCommentDTO> postComment = commentService.getCommentsByPostId(id, userIdFrist);
+        //when
+        List<PostCommentDTO> postComment = commentService.getCommentsByPostId(id, firstUserId);
 
         //then
         assertEquals(0, postComment.size());
@@ -57,12 +94,12 @@ class CommentServiceTest {
     @DisplayName("댓글 조회 성공")
     public void getCommentSuccess() {
         //given
-        commentService.saveNewComments(첫번째코멘트);
-        commentService.saveNewComments(두번째코멘트);
-        int postId = 999;
+        doNothing().when(commentMapper).insertNewComment(첫번째코멘트);
+        doNothing().when(commentMapper).insertNewComment(두번째코멘트);
+        when(commentMapper.selectCommentsByPostId(첫번째코멘트.getPostId())).thenReturn(generateComment());
 
-        //wehn
-        List<PostCommentDTO> postComment = commentService.getCommentsByPostId(postId, userIdFrist);
+        //when
+        List<PostCommentDTO> postComment = commentService.getCommentsByPostId(anyInt(), firstUserId);
 
         //then
         assertEquals(2, postComment.size());
@@ -73,18 +110,16 @@ class CommentServiceTest {
     @DisplayName("다른 글쓴이로 인해 수정 실패")
     public void updateCommentFail() {
         //given
-        int insertCommentId = commentService.saveNewComments(첫번째코멘트);
+        doNothing().when(commentMapper).insertNewComment(첫번째코멘트);
+        when(commentMapper.selectCommentById(첫번째코멘트.getCommentId())).thenReturn(첫번째코멘트);
 
-        LocalDateTime currentTime = LocalDateTime.now();
-        두번째코멘트 = new PostCommentDTO(1, 999, insertCommentId, 0, "두번째 댓글 입니다.", userIdSecond,
-            currentTime, currentTime, null,
-            null);
-
-        //wehn
         //then
         assertThrows(OperationNotAllowedException.class, () -> {
-            commentService.updateComment(두번째코멘트, userIdSecond);
+            commentService.updateComment(두번째코멘트DTO, secondUserId);
         });
+
+        // then
+        verify(commentMapper, times(0)).updateComment(any(PostComment.class));
     }
 
     @Transactional
@@ -92,18 +127,14 @@ class CommentServiceTest {
     @DisplayName("댓글 수정 성공")
     public void updateCommentSuccess() {
         //given
-        int insertCommentId = commentService.saveNewComments(첫번째코멘트);
+        doNothing().when(commentMapper).insertNewComment(첫번째코멘트);
+        when(commentMapper.selectCommentById(첫번째코멘트.getCommentId())).thenReturn(첫번째코멘트);
 
-        LocalDateTime currentTime = LocalDateTime.now();
-        두번째코멘트 = new PostCommentDTO(1, 999, insertCommentId, 0, "두번째 댓글 입니다.", 1, currentTime,
-            currentTime, null,
-            null);
-
-        //wehn
-        commentService.updateComment(두번째코멘트, userIdFrist);
+        //when
+        commentService.updateComment(첫번째코멘트DTO, firstUserId);
 
         //then
-        assertEquals("두번째 댓글 입니다.", 두번째코멘트.getCommentContent());
+        verify(commentMapper).updateComment(any(PostComment.class));
     }
 
     @Transactional
@@ -111,13 +142,16 @@ class CommentServiceTest {
     @DisplayName("다른 글쓴이로 인해 삭제 실패")
     public void deleteCommentFail() {
         //given
-        int insertCommentId = commentService.saveNewComments(첫번째코멘트);
+        doNothing().when(commentMapper).insertNewComment(첫번째코멘트);
+        when(commentMapper.selectCommentById(첫번째코멘트.getCommentId())).thenReturn(첫번째코멘트);
 
-        //wehn
         //then
         assertThrows(OperationNotAllowedException.class, () -> {
-            commentService.deleteComment(insertCommentId, userIdSecond);
+            commentService.deleteComment(첫번째코멘트.getCommentId(), secondUserId);
         });
+
+        // then
+        verify(commentMapper, times(0)).deleteComment(첫번째코멘트.getCommentId());
     }
 
     @Transactional
@@ -125,20 +159,13 @@ class CommentServiceTest {
     @DisplayName("삭제 성공")
     public void deleteCommentSuccess() {
         //given
-        int insertCommentId = commentService.saveNewComments(첫번째코멘트);
+        doNothing().when(commentMapper).insertNewComment(첫번째코멘트);
+        when(commentMapper.selectCommentById(첫번째코멘트.getCommentId())).thenReturn(첫번째코멘트);
 
         //wehn
-        commentService.deleteComment(insertCommentId, userIdFrist);
-
-        List<PostCommentDTO> postCommentDTOList = commentService
-            .getCommentsByPostId(첫번째코멘트.getPostId(), userIdFrist);
-
-        boolean existComment = postCommentDTOList.stream()
-            .filter(i -> i.getCommentId() == insertCommentId)
-            .findFirst()
-            .isPresent();
+        commentService.deleteComment(첫번째코멘트.getCommentId(), firstUserId);
 
         //then
-        assertEquals(false, existComment);
+        verify(commentMapper).deleteComment(첫번째코멘트.getCommentId());
     }
 }

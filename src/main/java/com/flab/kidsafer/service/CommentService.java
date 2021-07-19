@@ -2,6 +2,7 @@ package com.flab.kidsafer.service;
 
 import static java.util.stream.Collectors.toList;
 
+import com.flab.kidsafer.config.auth.dto.SessionUser;
 import com.flab.kidsafer.domain.PostComment;
 import com.flab.kidsafer.dto.PostCommentDTO;
 import com.flab.kidsafer.error.exception.CommentNotFoundException;
@@ -34,7 +35,11 @@ public class CommentService {
             .collect(toList());
     }
 
-    public int saveNewComments(PostCommentDTO comment) {
+    public int saveNewComments(PostCommentDTO comment, SessionUser user) {
+        if (user == null) {
+            throw new OperationNotAllowedException();
+        }
+
         PostComment curComment = new PostComment(comment);
         commentMapper.insertNewComment(curComment);
 
