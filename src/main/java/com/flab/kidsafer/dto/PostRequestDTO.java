@@ -17,6 +17,15 @@ public class PostRequestDTO {
     private String contents;
     private LocalDateTime registerDate;
 
+    public PostRequestDTO(int id, int postId,
+        int userId, String contents, LocalDateTime registerDate) {
+        this.id = id;
+        this.postId = postId;
+        this.userId = userId;
+        this.contents = contents;
+        this.registerDate = registerDate;
+    }
+
     public PostRequestDTO(PostRequestDTO.Builder builder) {
         this.id = builder.id;
         this.postId = builder.postId;
