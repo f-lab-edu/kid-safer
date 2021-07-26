@@ -86,12 +86,34 @@ public class PostRequestControllerTest {
     }
 
     @Test
+    @DisplayName("로그인 하지 않아 조회 실패")
+    public void getSingleRequest_failure() throws Exception {
+        session.setAttribute("user", null);
+        mockMvc.perform(get("/posts/{postId}/requests/mine", VALID_POSTID)
+            .contentType(MediaType.APPLICATION_JSON)
+            .session(session))
+            .andExpect(status().isBadRequest())
+            .andDo(print());
+    }
+
+    @Test
     @DisplayName("해당 포스트의 모든 신청 내역 조회 성공")
     public void getAllRequests_success() throws Exception {
-        mockMvc.perform(get("/posts/{postId}/requests/all", VALID_POSTID)
+        mockMvc.perform(get("/posts/{postId}/requests", VALID_POSTID)
             .contentType(MediaType.APPLICATION_JSON)
             .session(session))
             .andExpect(status().isOk())
+            .andDo(print());
+    }
+
+    @Test
+    @DisplayName("로그인 하지 않아 조회 실패")
+    public void getAllRequests_failure() throws Exception {
+        session.setAttribute("user", null);
+        mockMvc.perform(get("/posts/{postId}/requests", VALID_POSTID)
+            .contentType(MediaType.APPLICATION_JSON)
+            .session(session))
+            .andExpect(status().isBadRequest())
             .andDo(print());
     }
 

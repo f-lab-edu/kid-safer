@@ -5,16 +5,15 @@ import com.flab.kidsafer.config.auth.dto.SessionUser;
 import com.flab.kidsafer.domain.enums.UserType;
 import com.flab.kidsafer.dto.PostRequestDTO;
 import com.flab.kidsafer.error.exception.OperationNotAllowedException;
+import com.flab.kidsafer.error.exception.UserNotSignInException;
 import com.flab.kidsafer.service.PostRequestService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,11 +28,14 @@ public class PostRequestController {
   @GetMapping("/mine")
   public ResponseEntity<PostRequestDTO> getSingleRequest(@PathVariable int postId,
       @LoginUser SessionUser user) {
+    checkUserSignIn(user);
     return ResponseEntity.ok(postRequestService.getSingleRequest(postId, user.getId()));
   }
 
-  @GetMapping("/all")
-  public ResponseEntity<List<PostRequestDTO>> getAllRequests(@PathVariable int postId) {
+  @GetMapping
+  public ResponseEntity<List<PostRequestDTO>> getAllRequests(@PathVariable int postId,
+      @LoginUser SessionUser user) {
+    checkUserSignIn(user);
     return ResponseEntity.ok(postRequestService.getAllRequests(postId));
   }
 
@@ -52,5 +54,11 @@ public class PostRequestController {
       throw new OperationNotAllowedException();
     }
     postRequestService.cancelRequest(postId, user.getId());
+  }
+
+  public void checkUserSignIn(SessionUser user) {
+    if (user == null) {
+      throw new UserNotSignInException();
+    }
   }
 }
