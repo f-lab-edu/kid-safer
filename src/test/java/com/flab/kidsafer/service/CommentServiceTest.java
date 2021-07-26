@@ -18,14 +18,12 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@SpringBootTest
-@AutoConfigureMockMvc
+@ExtendWith(SpringExtension.class)
 class CommentServiceTest {
 
     @InjectMocks
@@ -89,7 +87,6 @@ class CommentServiceTest {
         assertEquals(0, postComment.size());
     }
 
-    @Transactional
     @Test
     @DisplayName("댓글 조회 성공")
     public void getCommentSuccess() {
@@ -105,7 +102,6 @@ class CommentServiceTest {
         assertEquals(2, postComment.size());
     }
 
-    @Transactional
     @Test
     @DisplayName("다른 글쓴이로 인해 수정 실패")
     public void updateCommentFail() {
@@ -122,7 +118,6 @@ class CommentServiceTest {
         verify(commentMapper, times(0)).updateComment(any(PostComment.class));
     }
 
-    @Transactional
     @Test
     @DisplayName("댓글 수정 성공")
     public void updateCommentSuccess() {
@@ -137,7 +132,6 @@ class CommentServiceTest {
         verify(commentMapper).updateComment(any(PostComment.class));
     }
 
-    @Transactional
     @Test
     @DisplayName("다른 글쓴이로 인해 삭제 실패")
     public void deleteCommentFail() {
@@ -154,7 +148,6 @@ class CommentServiceTest {
         verify(commentMapper, times(0)).deleteComment(첫번째코멘트.getCommentId());
     }
 
-    @Transactional
     @Test
     @DisplayName("삭제 성공")
     public void deleteCommentSuccess() {
