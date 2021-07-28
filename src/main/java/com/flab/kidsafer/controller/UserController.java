@@ -1,6 +1,6 @@
 package com.flab.kidsafer.controller;
 
-import com.flab.kidsafer.config.auth.dto.SessionUser;
+import com.flab.kidsafer.aop.CheckLogin;
 import com.flab.kidsafer.domain.SignInRequest;
 import com.flab.kidsafer.domain.SignInResponse;
 import com.flab.kidsafer.domain.enums.SignInStatus;
@@ -10,9 +10,9 @@ import com.flab.kidsafer.dto.UserUpdateInfoRequest;
 import com.flab.kidsafer.dto.UserUpdatePasswordRequest;
 import com.flab.kidsafer.error.exception.EmailSendTimeException;
 import com.flab.kidsafer.error.exception.TokenInvalidException;
-import com.flab.kidsafer.error.exception.UserNotSignInException;
 import com.flab.kidsafer.error.exception.UserNotSignUpException;
 import com.flab.kidsafer.service.UserService;
+import com.flab.kidsafer.utils.SessionUtil;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,26 +45,18 @@ public class UserController {
         SignInResponse signInResponse;
         ResponseEntity<SignInResponse> responseEntity;
 
-        httpSession.setAttribute(MEMBER_ID, user.getUserId());
-        SessionUser sessionUser = new SessionUser(user);
-        httpSession.setAttribute("user", sessionUser);
+        SessionUtil.setLoginUserId(httpSession, user);
+
         signInResponse = new SignInResponse(SignInStatus.SUCCESS, user);
         responseEntity = new ResponseEntity<>(signInResponse, HttpStatus.OK);
 
         return responseEntity;
     }
 
+    @CheckLogin
     @PostMapping("/signOut")
     public void signOut(HttpSession httpSession) {
-        if (!isSignIn(httpSession)) {
-            throw new UserNotSignInException();
-        }
-        httpSession.removeAttribute(MEMBER_ID);
-
-    }
-
-    public boolean isSignIn(final HttpSession httpSession) {
-        return httpSession.getAttribute(MEMBER_ID) != null;
+        SessionUtil.logoutUser(httpSession);
     }
 
     @PostMapping("/signUp")
@@ -87,7 +79,7 @@ public class UserController {
     @PostMapping("/confirmEmail")
     public ResponseEntity<User> confirmEmail(HttpSession httpSession, ModelAndView mav) {
 
-        int userId = (Integer) httpSession.getAttribute(MEMBER_ID);
+        int userId = SessionUtil.getLoginUserId(httpSession);
         User user = userService.finById(userId);
 
         if (!user.canSendConfirmEmail()) {
@@ -129,9 +121,5 @@ public class UserController {
         @Valid @RequestBody UserUpdatePasswordRequest userUpdatePasswordRequest,
         HttpSession httpSession) {
         userService.changePassword(userUpdatePasswordRequest, userId);
-    }
-
-    public int getSessionUserId(HttpSession httpSession) {
-        return (int) httpSession.getAttribute("MEMBER_ID");
     }
 }
