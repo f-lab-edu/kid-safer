@@ -5,7 +5,6 @@ import javax.validation.constraints.NotNull;
 
 public class PostRequestDTO {
 
-    @NotNull
     private int id;
 
     @NotNull
