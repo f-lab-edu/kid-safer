@@ -33,6 +33,7 @@ dependencies {
     /* Valid 애노테이션 통해 검증을 위해 추가 */
     implementation group: 'com.zaxxer', name: 'HikariCP', version: '4.0.3'
     /* hikari CP 커넥션 풀 사용을 위해 추가 */
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
 
 }
 
