@@ -20,6 +20,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
@@ -30,6 +31,9 @@ public class AdminServiceTest {
 
     @Mock
     private UserMapper userMapper;
+
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
 
     private int userId = 1;
     private User user;
