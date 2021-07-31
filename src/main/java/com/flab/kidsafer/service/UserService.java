@@ -4,7 +4,7 @@ import com.flab.kidsafer.config.AppProperties;
 import com.flab.kidsafer.mail.EmailMessage;
 import com.flab.kidsafer.domain.SignInRequest;
 import com.flab.kidsafer.domain.User;
-import com.flab.kidsafer.domain.UserDto;
+import com.flab.kidsafer.dto.UserDTO;
 import com.flab.kidsafer.error.exception.DuplicateIdException;
 import com.flab.kidsafer.dto.UserUpdateInfoRequest;
 import com.flab.kidsafer.dto.UserUpdatePasswordRequest;
@@ -63,13 +63,13 @@ public class UserService {
         return user;
     }
 
-    public User signUp(UserDto userDto) {
+    public User signUp(UserDTO userDto) {
         User user = saveNewUser(userDto);
         sendSignUpConfirmEmail(user);
         return user;
     }
 
-    private User saveNewUser(@Valid UserDto userDto) {
+    private User saveNewUser(@Valid UserDTO userDto) {
         User duplicationUser = userMapper.findByEmail(userDto.getEmail());
 
         if (duplicationUser != null) {
