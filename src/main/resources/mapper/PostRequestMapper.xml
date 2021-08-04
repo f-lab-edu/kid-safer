@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flab.kidsafer.mapper.PostRequestMapper">
+  <select id="getAllRequests" resultType="com.flab.kidsafer.dto.PostRequestDTO">
+    SELECT id, postId, userId, contents, registerDate
+    FROM posts_request
+    WHERE postID = #{postId}
+  </select>
+
+  <select id="getSingleRequest" resultType="com.flab.kidsafer.dto.PostRequestDTO">
+    SELECT id, postId, userId, contents, registerDate
+    FROM posts_request
+    WHERE postID = #{postId}
+    AND userId = #{userId}
+  </select>
+
+  <insert id="applyRequest" parameterType="com.flab.kidsafer.dto.PostRequestDTO">
+    INSERT INTO posts_request (postId, userId, contents, registerDate)
+    VALUES (#{postId},#{userId}, #{contents}, #{registerDate});
+  </insert>
+
+  <delete id="cancelRequest">
+    DELETE FROM posts_request
+    WHERE postId = #{postId}
+    AND userId = #{userId}
+  </delete>
+</mapper>
