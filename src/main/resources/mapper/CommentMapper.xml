@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flab.kidsafer.mapper.CommentMapper">
+
+  <select id="selectCommentsByPostId" parameterType="int"
+    resultType="com.flab.kidsafer.domain.PostComment">
+    select comment_level       as commentLevel
+         , post_id             as postId
+         , comment_id          as commentId
+         , comment_parent_id   as commetParentId
+         , comment_content     as commentContent
+         , comment_writer_id   as commentWriterId
+         , comment_create_date as commentCreateDate
+         , comment_mod_date    as commetModDate
+         , role                as role
+         , comment_status      as commentStatus
+    from comment
+    where post_id = #{posdId}
+  </select>
+
+  <select id="selectCommentById" parameterType="int"
+    resultType="com.flab.kidsafer.domain.PostComment">
+    select comment_level       as commentLevel
+         , post_id             as postId
+         , comment_id          as commentId
+         , comment_parent_id   as commetParentId
+         , comment_content     as commentContent
+         , comment_writer_id   as commentWriterId
+         , comment_create_date as commentCreateDate
+         , comment_mod_date    as commetModDate
+         , role                as role
+         , comment_status      as commentStatus
+    from comment
+    where comment_id = #{commentId}
+  </select>
+
+  <select id="getCountRelatedComments" parameterType="int" resultType="int">
+    select count(*)
+    from comment
+    where comment_parent_id = #{commentParentId}
+  </select>
+
+  <insert id="insertNewComment" parameterType="com.flab.kidsafer.domain.PostComment">
+    insert into comment (
+    post_id
+    , comment_content
+    , comment_writer_id
+    , comment_parent_id
+    , comment_create_date
+    , comment_mod_date
+    , comment_level
+    )
+    values (
+    #{postId}
+    , #{commentContent}
+    , #{commentWriterId}
+    , #{commentParentId}
+    , now()
+    , now()
+    , #{commentLevel}
+    )
+    <selectKey keyProperty="commentId" resultType="int" order="AFTER">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+  </insert>
+
+  <delete id="deleteComment" parameterType="int">
+    delete
+    from comment
+    where comment_id = #{commentId}
+  </delete>
+
+  <update id="updateDisableComment" parameterType="com.flab.kidsafer.domain.PostComment">
+    update
+      comment
+    set comment_content   = #{commentContent}
+      , comment_writer_id = #{commentWriterId}
+      , comment_mod_date  = now()
+      , comment_status    = 'N'
+    where comment_id = #{commentId}
+  </update>
+
+  <update id="updateComment" parameterType="com.flab.kidsafer.domain.PostComment">
+    update
+      comment
+    set comment_content  = #{commentContent},
+        comment_mod_date = now()
+    where comment_id = #{commentId}
+  </update>
+</mapper>
