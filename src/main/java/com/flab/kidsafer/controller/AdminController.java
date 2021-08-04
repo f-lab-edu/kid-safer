@@ -2,6 +2,7 @@ package com.flab.kidsafer.controller;
 
 import com.flab.kidsafer.config.auth.LoginUser;
 import com.flab.kidsafer.config.auth.dto.SessionUser;
+import com.flab.kidsafer.domain.enums.UserType;
 import com.flab.kidsafer.error.exception.OperationNotAllowedException;
 import com.flab.kidsafer.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ public class AdminController {
     }
 
     public void adminValidation(SessionUser user) {
-        if (!"ADMIN".equals(user.getType())) {    //TODO: 사용자 type enum으로 변경
+        if (user.getType() != UserType.ADMIN) {
             throw new OperationNotAllowedException();
         }
     }
