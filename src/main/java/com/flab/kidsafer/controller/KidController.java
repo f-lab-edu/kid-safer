@@ -2,6 +2,7 @@ package com.flab.kidsafer.controller;
 
 import com.flab.kidsafer.domain.Kid;
 import com.flab.kidsafer.service.KidService;
+import com.flab.kidsafer.utils.SessionUtil;
 import java.util.List;
 import java.util.Optional;
 import javax.servlet.http.HttpSession;
@@ -38,7 +39,7 @@ public class KidController {
      */
     @GetMapping
     public Optional<List<Kid>> getAllKid(HttpSession httpSession) {
-        int parentId = getSessionUserId(httpSession);
+        int parentId = SessionUtil.getLoginUserId(httpSession);
         return Optional.ofNullable(kidService.getAllKid(parentId));
     }
 
@@ -57,7 +58,7 @@ public class KidController {
     @PutMapping("/{kidId}")
     public void updateKid(@PathVariable int kidId, @Valid @RequestBody Kid kid,
         HttpSession httpSession) {
-        int parentId = getSessionUserId(httpSession);
+        int parentId = SessionUtil.getLoginUserId(httpSession);
         kidService.updateKid(kid, parentId);
     }
 
@@ -66,11 +67,7 @@ public class KidController {
      */
     @DeleteMapping("/{kidId}")
     public void deleteKid(@PathVariable int kidId, HttpSession httpSession) {
-        int parentId = getSessionUserId(httpSession);
+        int parentId = SessionUtil.getLoginUserId(httpSession);
         kidService.deleteKid(kidId, parentId);
-    }
-
-    public int getSessionUserId(HttpSession httpSession) {
-        return (int) httpSession.getAttribute("MEMBER_ID");
     }
 }
