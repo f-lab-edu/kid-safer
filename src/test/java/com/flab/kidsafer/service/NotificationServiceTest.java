@@ -63,13 +63,13 @@ class NotificationServiceTest {
         safer = new User.Builder("test2", "test2", UserType.SAFER).build();
 
         notificationBlock = new Notification.Builder().id(1).message("계정이 차단되었습니다.").userId(1).checked(false).notificationType(
-            NotificationType.BLOCK_STATUE_CHANGE.name()).build();
+            NotificationType.BLOCK_STATUE_CHANGE).build();
         notificationApplication = new Notification.Builder().id(1).message("등하원 요청에 대한 신청이 들어왔습니다.").userId(1).checked(false).notificationType(
-            NotificationType.REQUEST_APPLICATION.name()).build();
+            NotificationType.REQUEST_APPLICATION).build();
         notificationRequestSuccess = new Notification.Builder().id(2).message("등하원 신청이 수락 되었습니다.").userId(1).checked(true).notificationType(
-            NotificationType.REQUEST_SUCCESS.name()).build();
+            NotificationType.REQUEST_SUCCESS).build();
         notificationRequestFail = new Notification.Builder().id(2).message("등하원 신청이 거절 되었습니다.").userId(1).checked(false).notificationType(
-            NotificationType.REQUEST_FAIL.name()).build();
+            NotificationType.REQUEST_FAIL).build();
     }
 
     public List<Notification> generateNotReadNotification(boolean isChecked) {
@@ -97,7 +97,7 @@ class NotificationServiceTest {
         when(notificationMapper.countByUserAndChecked(parent.getUserId(), false)).thenReturn(3L);
 
         // when
-        notificationService.putCategorizedNotifications(new SessionUser(parent), false);
+        notificationService.putCategorizedUnCheckedNotifications(new SessionUser(parent));
 
         // then
         verify(notificationMapper, times(3)).updateNotificationsChecked(any(Notification.class));
@@ -115,11 +115,10 @@ class NotificationServiceTest {
         when(notificationMapper.countByUserAndChecked(parent.getUserId(), true)).thenReturn(3L);
 
         // when
-        NotificationResponse notificationResponse = notificationService.putCategorizedNotifications(new SessionUser(parent), true);
+        NotificationResponse notificationResponse = notificationService.putCategorizedCheckedNotifications(new SessionUser(parent));
 
         // then
         verify(notificationMapper, never()).updateNotificationsChecked(any(Notification.class));
-        assertEquals(1, notificationResponse.getRequestApplicationNotifications().size());
     }
 
     @Test

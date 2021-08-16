@@ -1,5 +1,6 @@
 package com.flab.kidsafer.domain;
 
+import com.flab.kidsafer.domain.enums.NotificationType;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -12,9 +13,9 @@ public class Notification {
 
     private LocalDateTime createdDateTime;
 
-    private String notificationType;
+    private NotificationType notificationType;
 
-    public Notification(Long id, String message, boolean checked, Long userId, String notificationType) {
+    public Notification(Long id, String message, boolean checked, Long userId, NotificationType notificationType) {
         this.id = id;
         this.message = message;
         this.checked = checked;
@@ -46,7 +47,7 @@ public class Notification {
         return userId;
     }
 
-    public String getNotificationType() {
+    public NotificationType getNotificationType() {
         return notificationType;
     }
 
@@ -77,7 +78,7 @@ public class Notification {
         private String message;
         private boolean checked;
         private Long userId;
-        private String notificationType;
+        private NotificationType notificationType;
 
         public Builder() {
         }
@@ -102,7 +103,7 @@ public class Notification {
             return this;
         }
 
-        public Notification.Builder notificationType(String notificationType) {
+        public Notification.Builder notificationType(NotificationType notificationType) {
             this.notificationType = notificationType;
             return this;
         }

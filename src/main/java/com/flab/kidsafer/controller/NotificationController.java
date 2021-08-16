@@ -20,15 +20,13 @@ public class NotificationController {
 
     @GetMapping
     public ResponseEntity<NotificationResponse> getNotifications(@LoginUser SessionUser user) {
-        NotificationResponse notificationResponse = notificationService
-            .putCategorizedNotifications(user, true);
+        NotificationResponse notificationResponse = notificationService.putCategorizedCheckedNotifications(user);
         return ResponseEntity.ok(notificationResponse);
     }
 
     @GetMapping("/old")
     public ResponseEntity<NotificationResponse> getOldNotifications(@LoginUser SessionUser user) {
-        NotificationResponse notificationResponse = notificationService
-            .putCategorizedNotifications(user, false);
+        NotificationResponse notificationResponse = notificationService.putCategorizedUnCheckedNotifications(user);
         return ResponseEntity.ok(notificationResponse);
     }
 

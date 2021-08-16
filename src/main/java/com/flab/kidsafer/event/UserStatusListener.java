@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Async
 @Component
-@Transactional
 public class UserStatusListener {
 
     @Autowired
@@ -28,7 +27,7 @@ public class UserStatusListener {
             .checked(false)
             .message(message)
             .userId(userId)
-            .notificationType(notificationType.name())
+            .notificationType(notificationType)
             .build();
 
         notificationMapper.insertNotification(notification);
