@@ -1,5 +1,6 @@
 package com.flab.kidsafer.utils;
 
+import com.flab.kidsafer.config.auth.dto.SessionUser;
 import com.flab.kidsafer.domain.User;
 import javax.servlet.http.HttpSession;
 
@@ -22,7 +23,8 @@ public class SessionUtil {
 
     public static void setLoginUserId(HttpSession session, User user) {
         session.setAttribute(MEMBER_ID, user.getUserId());
-        session.setAttribute(USER, user);
+        SessionUser sessionUser = new SessionUser(user);
+        session.setAttribute(USER, sessionUser);
     }
 
     public static void clearSession(HttpSession session) {
