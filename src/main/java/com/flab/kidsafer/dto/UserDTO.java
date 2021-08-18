@@ -1,4 +1,4 @@
-package com.flab.kidsafer.domain;
+package com.flab.kidsafer.dto;
 
 import com.flab.kidsafer.domain.enums.Status;
 import com.flab.kidsafer.domain.enums.UserType;
@@ -6,7 +6,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
-public class UserDto {
+public class UserDTO {
 
     @NotNull(message = "Null은 포함될 수 없습니다.")
     @Email(message = "유효하지 않은 이메일 형식입니다.")
@@ -30,7 +30,7 @@ public class UserDto {
 
     private Status status;
 
-    public UserDto(String email, String password, String nickname, String phone,
+    public UserDTO(String email, String password, String nickname, String phone,
         UserType type, Status status) {
         this.email = email;
         this.password = password;
@@ -40,7 +40,7 @@ public class UserDto {
         this.status = status;
     }
 
-    public UserDto(Builder builder) {
+    public UserDTO(Builder builder) {
         this.email = builder.email;
         this.password = builder.password;
         this.nickname = builder.nickname;
@@ -62,38 +62,38 @@ public class UserDto {
             return this;
         }
 
-        public UserDto.Builder email(String email) {
+        public UserDTO.Builder email(String email) {
             this.email = email;
             return this;
         }
 
-        public UserDto.Builder password(String password) {
+        public UserDTO.Builder password(String password) {
             this.password = password;
             return this;
         }
         
-        public UserDto.Builder type(UserType type) {
+        public UserDTO.Builder type(UserType type) {
             this.type = type;
             return this;
         }
 
-        public UserDto.Builder nickname(String nickname) {
+        public UserDTO.Builder nickname(String nickname) {
             this.nickname = nickname;
             return this;
         }
 
-        public UserDto.Builder phone(String phone) {
+        public UserDTO.Builder phone(String phone) {
             this.phone = phone;
             return this;
         }
 
-        public UserDto.Builder status(Status status) {
+        public UserDTO.Builder status(Status status) {
             this.status = status;
             return this;
         }
 
-        public UserDto build() {
-            return new UserDto(this);
+        public UserDTO build() {
+            return new UserDTO(this);
         }
     }
 

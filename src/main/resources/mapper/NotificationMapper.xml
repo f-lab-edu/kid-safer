@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flab.kidsafer.mapper.NotificationMapper">
+
+  <select id="countByUserAndChecked" resultType="Long">
+    SELECT count(*)
+    FROM notification
+    WHERE userId = #{userId}
+      and checked = #{checked}
+    order by createDate desc
+  </select>
+
+  <select id="selectNotificationByUserAndChecked" resultType="com.flab.kidsafer.domain.Notification">
+    SELECT id
+         , message
+         , checked
+         , userId
+         , notificationType
+    FROM notification
+    WHERE userId = #{userId}
+      and checked = #{checked}
+    order by createDate desc
+  </select>
+
+  <insert id="insertNotification" parameterType="com.flab.kidsafer.domain.Notification">
+    INSERT INTO notification (message, checked, userId, notificationType, createDate)
+    VALUE (#{message}, #{checked}, #{userId}, #{notificationType}, now());
+  </insert>
+
+  <update id="updateNotificationsChecked">
+    UPDATE notification
+    SET checked = true
+    WHERE id = #{id}
+  </update>
+
+  <delete id="deleteNotification">
+    DELETE FROM notification
+    WHERE checked = true
+    and userId = #{userId}
+  </delete>
+</mapper>

@@ -5,7 +5,7 @@ import com.flab.kidsafer.domain.SignInRequest;
 import com.flab.kidsafer.domain.SignInResponse;
 import com.flab.kidsafer.domain.enums.SignInStatus;
 import com.flab.kidsafer.domain.User;
-import com.flab.kidsafer.domain.UserDto;
+import com.flab.kidsafer.dto.UserDTO;
 import com.flab.kidsafer.dto.UserUpdateInfoRequest;
 import com.flab.kidsafer.dto.UserUpdatePasswordRequest;
 import com.flab.kidsafer.error.exception.EmailSendTimeException;
@@ -60,7 +60,7 @@ public class UserController {
     }
 
     @PostMapping("/signUp")
-    public ResponseEntity<String> signUp(@RequestBody UserDto userDto, ModelAndView mav) {
+    public ResponseEntity<String> signUp(@RequestBody UserDTO userDto, ModelAndView mav) {
         User inserUser = userService.signUp(userDto);
 
         if (inserUser == null) {
