@@ -1,11 +1,12 @@
 package com.flab.kidsafer.dto;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
-public class PostDTO {
+public class PostDTO implements Serializable {
 
     @NotNull
     private int id;

@@ -34,6 +34,9 @@ dependencies {
     implementation group: 'com.zaxxer', name: 'HikariCP', version: '4.0.3'
     /* hikari CP 커넥션 풀 사용을 위해 추가 */
     implementation 'org.springframework.boot:spring-boot-starter-aop'
+    /* 캐싱 적용을 위해 추가 */
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+    compile group: 'net.sf.ehcache', name: 'ehcache', version: '2.10.9.2'
 
 }
 
